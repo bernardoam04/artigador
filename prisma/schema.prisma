@@ -1,0 +1,252 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  articles        Article[]
+  emailSubscriptions EmailSubscription[]
+  
+  @@map("users")
+}
+
+model Category {
+  id          String @id
+  name        String
+  description String
+  parentId    String?
+  
+  // Relations
+  parent     Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children   Category[] @relation("CategoryHierarchy")
+  articles   ArticleCategory[]
+  events     EventCategory[]
+  
+  @@map("categories")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  name        String
+  shortName   String   @unique
+  description String
+  website     String?
+  organizer   String
+  field       String
+  topics      String   // JSON array
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  editions   EventEdition[]
+  categories EventCategory[]
+  
+  @@map("events")
+}
+
+model EventEdition {
+  id          String   @id @default(cuid())
+  eventId     String
+  year        Int
+  city        String
+  country     String
+  venue       String?
+  startDate   DateTime
+  endDate     DateTime
+  submissionDeadline DateTime?
+  notificationDate   DateTime?
+  cameraReadyDate    DateTime?
+  website     String?
+  description String?
+  chairpersons String  // JSON array
+  tracks      String   // JSON array
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  event    Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  articles Article[]
+  
+  @@unique([eventId, year])
+  @@map("event_editions")
+}
+
+model Author {
+  id          String @id @default(cuid())
+  name        String
+  email       String?
+  affiliation String
+  orcid       String? @unique
+  website     String?
+  bio         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  articles ArticleAuthor[]
+  
+  @@map("authors")
+}
+
+model Article {
+  id             String   @id @default(cuid())
+  title          String
+  abstract       String
+  keywords       String   // JSON array
+  publishedDate  DateTime
+  submittedDate  DateTime
+  lastModified   DateTime @updatedAt
+  doi            String?  @unique
+  arxivId        String?  @unique
+  pdfUrl         String
+  pdfPath        String?  // local file path
+  citationCount  Int      @default(0)
+  downloads      Int      @default(0)
+  status         ArticleStatus @default(PUBLISHED)
+  language       String   @default("en")
+  pageCount      Int?
+  startPage      Int?
+  endPage        Int?
+  version        Int      @default(1)
+  track          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // Foreign keys
+  eventEditionId String?
+  userId         String?  // who created/uploaded this article
+  
+  // Relations
+  eventEdition EventEdition?     @relation(fields: [eventEditionId], references: [id])
+  user         User?             @relation(fields: [userId], references: [id])
+  authors      ArticleAuthor[]
+  categories   ArticleCategory[]
+  
+  @@map("articles")
+}
+
+model ArticleAuthor {
+  articleId String
+  authorId  String
+  order     Int     // order of authorship
+  
+  // Relations
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  author  Author  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  @@id([articleId, authorId])
+  @@map("article_authors")
+}
+
+model ArticleCategory {
+  articleId  String
+  categoryId String
+  
+  // Relations
+  article  Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  @@id([articleId, categoryId])
+  @@map("article_categories")
+}
+
+model EventCategory {
+  eventId    String
+  categoryId String
+  
+  // Relations
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  @@id([eventId, categoryId])
+  @@map("event_categories")
+}
+
+model EmailSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  authorId  String?  // subscribe to specific author's articles
+  eventId   String?  // subscribe to specific event's articles
+  keywords  String?  // JSON array of keywords to subscribe to
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("email_subscriptions")
+}
+
+model ImportLog {
+  id        String     @id @default(cuid())
+  filename  String
+  type      ImportType
+  status    ImportStatus
+  totalRecords    Int
+  successRecords  Int
+  errorRecords    Int
+  errors    String?    // JSON array of errors
+  createdAt DateTime   @default(now())
+  userId    String
+  
+  @@map("import_logs")
+}
+
+model Subscription {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  interests    String?   // comma-separated interests
+  confirmToken String?   @unique
+  isConfirmed  Boolean   @default(false)
+  confirmedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  @@map("subscriptions")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ArticleStatus {
+  PUBLISHED
+  PREPRINT
+  UNDER_REVIEW
+  DRAFT
+}
+
+enum ImportType {
+  BIBTEX
+  CSV
+  JSON
+}
+
+enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}

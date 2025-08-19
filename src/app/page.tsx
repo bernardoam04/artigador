@@ -1,103 +1,152 @@
-import Image from "next/image";
+'use client';
+
+import Link from 'next/link';
+import { TrendingUp, Clock, Star } from 'lucide-react';
+import ArticleCard from '@/components/ArticleCard';
+import SearchWithSuggestions from '@/components/SearchWithSuggestions';
+import NewsletterSignup from '@/components/NewsletterSignup';
+import { realArticles } from '@/data/realArticles';
+import { categories } from '@/data/categories';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const featuredArticles = realArticles.slice(0, 3);
+  const recentArticles = realArticles.slice(3, 6);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-b from-blue-600 to-blue-700 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Discover Academic Excellence
+          </h1>
+          <p className="text-xl md:text-2xl mb-8 text-blue-100">
+            Access thousands of research articles across multiple disciplines
+          </p>
+          <div className="max-w-2xl mx-auto">
+            <SearchWithSuggestions
+              className="w-full pl-12 pr-4 py-4 text-lg rounded-lg border-0 text-gray-900 placeholder-white focus:ring-2 focus:ring-blue-300"
+              iconClassName="text-white"
+              showButton={true}
+              buttonText="Search"
+              onSearch={(query) => {
+                window.location.href = `/browse?q=${encodeURIComponent(query)}`;
+              }}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+          <div className="mt-8 text-blue-100">
+            <span className="text-sm">Popular searches: </span>
+            <Link href="/browse?q=machine+learning" className="text-blue-200 hover:text-white mx-2">machine learning</Link>
+            <Link href="/browse?q=quantum+computing" className="text-blue-200 hover:text-white mx-2">quantum computing</Link>
+            <Link href="/browse?q=software+engineering" className="text-blue-200 hover:text-white mx-2">software engineering</Link>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Quick Stats */}
+      <section className="py-12 bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-3xl font-bold text-blue-600">2.4M+</div>
+              <div className="text-gray-600">Articles</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-blue-600">150K+</div>
+              <div className="text-gray-600">Authors</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-blue-600">500+</div>
+              <div className="text-gray-600">Institutions</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-blue-600">50+</div>
+              <div className="text-gray-600">Disciplines</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Articles */}
+      <section className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+              <Star className="h-8 w-8 text-yellow-500 mr-3" />
+              Featured Articles
+            </h2>
+            <Link href="/browse" className="text-blue-600 hover:text-blue-800 font-medium">
+              View all →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredArticles.map(article => (
+              <ArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Articles */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+              <Clock className="h-8 w-8 text-green-500 mr-3" />
+              Recent Publications
+            </h2>
+            <Link href="/recent" className="text-blue-600 hover:text-blue-800 font-medium">
+              View all →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentArticles.map(article => (
+              <ArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories */}
+      <section className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+              <TrendingUp className="h-8 w-8 text-purple-500 mr-3" />
+              Browse by Category
+            </h2>
+            <Link href="/categories" className="text-blue-600 hover:text-blue-800 font-medium">
+              View all →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {categories.map(category => (
+              <Link
+                key={category.id}
+                href={`/category/${category.id}`}
+                className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {category.name}
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  {category.description}
+                </p>
+                <div className="text-sm text-blue-600">
+                  {category.subcategories?.length} subcategories
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Signup */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <NewsletterSignup />
+        </div>
+      </section>
     </div>
   );
 }
