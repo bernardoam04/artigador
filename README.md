@@ -2,6 +2,15 @@
 
 A comprehensive academic article library platform similar to ACM Digital Library and arXiv, built with modern web technologies. Artigador provides researchers, academics, and students with a powerful platform to discover, manage, and access scientific publications across multiple disciplines.
 
+Group Members:
+   - Bernardo Alves Miranda (FullStack)
+   - Bernardo Venancio Cunha de Oliveira
+   - Lucas Albuquerque Santos Costa
+   - Cauã Magalhães Pereira
+     
+AI tools being used:
+  - Claudecli PRO - paid version (R$ 110,00 monthly)
+
 ## 🌟 Features
 
 ### Core Functionality
