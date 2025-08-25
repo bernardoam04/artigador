@@ -6,7 +6,7 @@ Group Members:
    - Bernardo Alves Miranda (FullStack)
    - Bernardo Venancio Cunha de Oliveira
    - Lucas Albuquerque Santos Costa
-   - Cauã Magalhães Pereira
+   - Cauã Magalhães Pereira (FullStack)
      
 AI tools being used:
   - Claudecli PRO - paid version (R$ 110,00 monthly)
