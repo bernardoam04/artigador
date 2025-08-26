@@ -4,8 +4,8 @@ A comprehensive academic article library platform similar to ACM Digital Library
 
 Group Members:
    - Bernardo Alves Miranda (FullStack)
-   - Bernardo Venancio Cunha de Oliveira
-   - Lucas Albuquerque Santos Costa
+   - Bernardo Venancio Cunha de Oliveira (FullStack)
+   - Lucas Albuquerque Santos Costa (FullStack)
    - Cauã Magalhães Pereira (FullStack)
      
 AI tools being used:
