@@ -374,4 +374,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+## Sprints
+Some of the project's sprints backlog are available at [BACKLOGS](BACKLOG_SPRINTS.md)
+
+
 **Artigador** - Making academic research more accessible, one article at a time.
