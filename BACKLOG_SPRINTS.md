@@ -1,5 +1,7 @@
 # Backlog das Sprints - Artigador
 
+O projeto foi desenvolvido em quase uma unica sprint conjunta, com todos os membros programando em conjunto (pair/mob programming). Por praticidade, usamos apenas um ambiente configurado na conta de um integrante. Nesse contexto, o time contou com o apoio de uma ferramenta de IA no modo agente (Claude PRO, versão paga) para auxiliar na organização, revisão e aceleração do desenvolvimento.
+
 ## Sprint 1: Gerenciamento de Eventos
 
 ### História #1: Como administrador, eu quero cadastrar (editar, deletar) um evento
