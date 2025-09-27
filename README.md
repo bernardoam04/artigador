@@ -11,6 +11,12 @@ Group Members:
 AI tools being used:
   - Claudecli PRO - paid version (R$ 110,00 monthly)
 
+## UML Diagrams
+A package UML diagram and a sequence UML diagram are available at [DIAGRAMS](DIAGRAMS_UML.md)
+
+## Sprints
+Some of the project's sprints backlog are available at [BACKLOGS](BACKLOG_SPRINTS.md)
+
 ## 🌟 Features
 
 ### Core Functionality
@@ -373,9 +379,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Special thanks to all contributors
 
 ---
-
-## Sprints
-Some of the project's sprints backlog are available at [BACKLOGS](BACKLOG_SPRINTS.md)
 
 
 **Artigador** - Making academic research more accessible, one article at a time.
