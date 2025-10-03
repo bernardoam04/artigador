@@ -66,8 +66,8 @@ model EventEdition {
   id          String   @id @default(cuid())
   eventId     String
   year        Int
-  city        String
-  country     String
+  city        String?
+  country     String?
   venue       String?
   startDate   DateTime
   endDate     DateTime
@@ -76,11 +76,11 @@ model EventEdition {
   cameraReadyDate    DateTime?
   website     String?
   description String?
-  chairpersons String  // JSON array
-  tracks      String   // JSON array
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  chairpersons String?  // JSON array
+  tracks      String?   // JSON array
+  isPublished Boolean?  @default(false)
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
   
   // Relations
   event    Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -93,7 +93,7 @@ model EventEdition {
 model Author {
   id          String @id @default(cuid())
   name        String
-  email       String?
+  email       String? @unique
   affiliation String
   orcid       String? @unique
   website     String?
@@ -112,24 +112,24 @@ model Article {
   title          String
   abstract       String
   keywords       String   // JSON array
-  publishedDate  DateTime
-  submittedDate  DateTime
-  lastModified   DateTime @updatedAt
+  publishedDate  DateTime?
+  submittedDate  DateTime?
+  lastModified   DateTime? @updatedAt
   doi            String?  @unique
   arxivId        String?  @unique
-  pdfUrl         String
+  pdfUrl         String?
   pdfPath        String?  // local file path
-  citationCount  Int      @default(0)
-  downloads      Int      @default(0)
-  status         ArticleStatus @default(PUBLISHED)
-  language       String   @default("en")
+  citationCount  Int?      @default(0)
+  downloads      Int?      @default(0)
+  status         ArticleStatus? @default(PUBLISHED)
+  language       String?  @default("en")
   pageCount      Int?
   startPage      Int?
   endPage        Int?
-  version        Int      @default(1)
+  version        Int?      @default(1)
   track          String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime? @default(now())
+  updatedAt      DateTime? @updatedAt
   
   // Foreign keys
   eventEditionId String?

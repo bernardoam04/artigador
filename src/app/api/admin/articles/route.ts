@@ -98,12 +98,11 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/admin/articles - Create new article
+// POST /api/admin/articles - Create new article
 export async function POST(request: NextRequest) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const user = verifyToken(token);
     if (!user || user.role !== 'ADMIN') {
@@ -116,78 +115,119 @@ export async function POST(request: NextRequest) {
       abstract,
       keywords,
       doi,
-      url,
-      pdfPath,
-      pages,
+      url,          // vem do front
+      pdfPath,      // vem do front (vamos ignorar como coluna, só usar para pdfUrl se útil)
+      pages,        // vem do front ("1-200" etc.)
       eventEditionId,
       authors,
-      categories
+      categories,
+      publishedDate,   // se existir no seu schema como obrigatório, valide
+      submittedDate,   // idem: ajuste conforme seu schema
+      language,
+      track,
+      status,          // se tiver enum ArticleStatus
     } = body;
 
-    // Validate required fields
     if (!title || !eventEditionId) {
-      return NextResponse.json({ 
-        error: 'Title and event edition are required' 
-      }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Title and event edition are required' },
+        { status: 400 }
+      );
     }
 
-    // Check if event edition exists
-    const eventEdition = await prisma.eventEdition.findUnique({
-      where: { id: eventEditionId }
-    });
-
+    // Confirma que a edição existe
+    const eventEdition = await prisma.eventEdition.findUnique({ where: { id: eventEditionId } });
     if (!eventEdition) {
       return NextResponse.json({ error: 'Event edition not found' }, { status: 404 });
     }
 
-    // Create article with transaction for data consistency
+    // ======= MAPEAMENTOS PARA O SCHEMA ATUAL =======
+
+    // pdfUrl: use "url" do front; se não tiver, caia para pdfPath
+    const pdfUrl: string | null = url ?? pdfPath ?? null;
+
+    // arxivId: se o pdfUrl for do arXiv, extraia o id (opcional)
+    let arxivId: string | null = null;
+    if (pdfUrl) {
+      const m =
+        /arxiv\.org\/(?:abs|pdf)\/([0-9]{4}\.[0-9]{4,5})(?:v\d+)?/i.exec(pdfUrl);
+      if (m?.[1]) arxivId = m[1];
+    }
+
+    // pages: converter "1-200" -> startPage=1, endPage=200, pageCount=200
+    let startPage: number | null = null;
+    let endPage: number | null = null;
+    let pageCount: number | null = null;
+    if (typeof pages === 'string' && pages.trim()) {
+      const range = pages.trim();
+      const m = /^(\d+)\s*-\s*(\d+)$/.exec(range);
+      if (m) {
+        startPage = parseInt(m[1], 10);
+        endPage = parseInt(m[2], 10);
+        if (!Number.isNaN(startPage) && !Number.isNaN(endPage) && endPage >= startPage) {
+          pageCount = endPage - startPage + 1;
+        }
+      } else {
+        // se vier só um número, use como pageCount
+        const single = parseInt(range, 10);
+        if (!Number.isNaN(single)) {
+          pageCount = single;
+        }
+      }
+    }
+
+    // Datas opcionais conforme schema (ajuste conforme seu modelo real)
+    const pub = publishedDate ? new Date(publishedDate) : null;
+    const subm = submittedDate ? new Date(submittedDate) : null;
+
+    // Se seu schema exigir publishedDate como NOT NULL, valide:
+    // if (!pub || Number.isNaN(+pub)) {
+    //   return NextResponse.json({ error: 'publishedDate is required/invalid' }, { status: 400 });
+    // }
+
+    // ================================================
+
     const article = await prisma.$transaction(async (tx) => {
-      // Create article
       const newArticle = await tx.article.create({
         data: {
           title,
-          abstract,
-          keywords,
-          doi,
-          url,
-          pdfPath,
-          pages,
-          eventEditionId
-        }
+          abstract: abstract ?? null,
+          keywords: keywords ?? null,
+          doi: doi ?? null,
+
+          // CAMPOS QUE EXISTEM NO SCHEMA (conforme o log):
+          pdfUrl,                // <- no lugar de "url"/"pdfPath"
+          arxivId,               // <- extraído do link, se aplicável
+          pageCount,
+          startPage,
+          endPage,
+          publishedDate: pub,    // se seu model permitir null
+          submittedDate: subm,   // idem
+          language: language ?? null,
+          track: track ?? null,
+          status: status ?? null,  // se seu model tiver enum ArticleStatus
+
+          eventEditionId,
+        },
       });
 
-      // Create author associations
-      if (authors && authors.length > 0) {
+      // Autores
+      if (Array.isArray(authors) && authors.length > 0) {
         for (let i = 0; i < authors.length; i++) {
-          const authorData = authors[i];
-          
-          // Find or create author
+          const a = authors[i];
           const author = await tx.author.upsert({
-            where: { email: authorData.email },
-            update: {
-              name: authorData.name,
-              affiliation: authorData.affiliation
-            },
-            create: {
-              name: authorData.name,
-              email: authorData.email,
-              affiliation: authorData.affiliation
-            }
+            where: { email: a.email },
+            update: { name: a.name, affiliation: a.affiliation },
+            create: { name: a.name, email: a.email, affiliation: a.affiliation }
           });
-
-          // Create article-author association
           await tx.articleAuthor.create({
-            data: {
-              articleId: newArticle.id,
-              authorId: author.id,
-              order: i + 1
-            }
+            data: { articleId: newArticle.id, authorId: author.id, order: i + 1 }
           });
         }
       }
 
-      // Create category associations
-      if (categories && categories.length > 0) {
+      // Categorias
+      if (Array.isArray(categories) && categories.length > 0) {
         await tx.articleCategory.createMany({
           data: categories.map((categoryId: string) => ({
             articleId: newArticle.id,
@@ -199,26 +239,13 @@ export async function POST(request: NextRequest) {
       return newArticle;
     });
 
-    // Fetch complete article with relations
+    // Retorna com relações
     const completeArticle = await prisma.article.findUnique({
       where: { id: article.id },
       include: {
-        authors: {
-          include: {
-            author: true
-          },
-          orderBy: { order: 'asc' }
-        },
-        eventEdition: {
-          include: {
-            event: true
-          }
-        },
-        categories: {
-          include: {
-            category: true
-          }
-        }
+        authors: { include: { author: true }, orderBy: { order: 'asc' } },
+        eventEdition: { include: { event: true } },
+        categories: { include: { category: true } }
       }
     });
 
