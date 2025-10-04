@@ -17,14 +17,14 @@ export async function GET(request: NextRequest) {
     const articles = await prisma.article.findMany({
       where: {
         OR: [
-          { title: { contains: searchTerm, mode: 'insensitive' } },
-          { abstract: { contains: searchTerm, mode: 'insensitive' } },
-          { keywords: { contains: searchTerm, mode: 'insensitive' } },
+          { title: { contains: searchTerm} },
+          { abstract: { contains: searchTerm} },
+          { keywords: { contains: searchTerm} },
           {
             authors: {
               some: {
                 author: {
-                  name: { contains: searchTerm, mode: 'insensitive' }
+                  name: { contains: searchTerm}
                 }
               }
             }
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
           {
             eventEdition: {
               event: {
-                name: { contains: searchTerm, mode: 'insensitive' }
+                name: { contains: searchTerm}
               }
             }
           },
@@ -41,14 +41,14 @@ export async function GET(request: NextRequest) {
           {
             eventEdition: {
               event: {
-                shortName: { contains: searchTerm, mode: 'insensitive' }
+                shortName: { contains: searchTerm}
               }
             }
           },
           // Search by edition title
           {
             eventEdition: {
-              title: { contains: searchTerm, mode: 'insensitive' }
+              title: { contains: searchTerm}
             }
           }
         ]
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
     // Get unique authors that match the search
     const authors = await prisma.author.findMany({
       where: {
-        name: { contains: searchTerm, mode: 'insensitive' }
+        name: { contains: searchTerm}
       },
       take: 5,
       include: {
@@ -86,8 +86,8 @@ export async function GET(request: NextRequest) {
     const events = await prisma.event.findMany({
       where: {
         OR: [
-          { name: { contains: searchTerm, mode: 'insensitive' } },
-          { shortName: { contains: searchTerm, mode: 'insensitive' } }
+          { name: { contains: searchTerm} },
+          { shortName: { contains: searchTerm} }
         ]
       },
       take: 3,
@@ -105,7 +105,14 @@ export async function GET(request: NextRequest) {
     });
 
     // Build suggestions
-    const suggestions = [];
+    type Suggestion =
+      | { type: 'article'; value: string; id: string; authors: string[]; event: string | null }
+      | { type: 'author'; value: string; count: number }
+      | { type: 'event'; value: string; shortName: string; count: number }
+      | { type: 'keyword'; value: string; count: number };
+
+    // Inicializa array com tipo explícito
+    const suggestions: Suggestion[] = [];
 
     // Add article suggestions
     articles.slice(0, 3).forEach(article => {
@@ -114,7 +121,8 @@ export async function GET(request: NextRequest) {
         value: article.title,
         id: article.id,
         authors: article.authors.map(a => a.author.name),
-        event: `${article.eventEdition.event.shortName} ${article.eventEdition.year}`
+        event: article.eventEdition ? `${article.eventEdition.event?.shortName ?? "?"} ${article.eventEdition.year ?? "?"}` : null
+
       });
     });
 

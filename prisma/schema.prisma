@@ -66,6 +66,7 @@ model EventEdition {
   id          String   @id @default(cuid())
   eventId     String
   year        Int
+  title       String?
   city        String?
   country     String?
   venue       String?
