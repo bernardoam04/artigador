@@ -75,26 +75,12 @@ async function findOrCreateAuthor(tx: any, a: any) {
 }
 
 // ----------------- GET -----------------
-export async function GET(
-  request: NextRequest,
-  context: RouteContext
-) {
+export async function GET(request: NextRequest, context: { params: { id: string } }) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '');
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = verifyToken(token);
-    if (!user || user.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
-    const { id } = await context.params;
+    const { id } = context.params;
 
     const article = await prisma.article.findUnique({
       where: { id },
-      include: {
-        authors: { include: { author: true }, orderBy: { order: 'asc' } },
-        eventEdition: { include: { event: true } },
-        categories: { include: { category: true } },
-      },
     });
 
     if (!article) return NextResponse.json({ error: 'Article not found' }, { status: 404 });
@@ -104,6 +90,7 @@ export async function GET(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
 
 // ----------------- PUT -----------------
 export async function PUT(

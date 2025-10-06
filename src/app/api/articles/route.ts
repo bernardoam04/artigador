@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
-    const search = searchParams.get('q')?.trim();
+    const search = searchParams.get('q')?.trim().toLowerCase();
     const eventId = searchParams.get('eventId');
     const categoryId = searchParams.get('categoryId');
     const authorId = searchParams.get('authorId');
@@ -19,14 +19,14 @@ export async function GET(request: NextRequest) {
     
     if (search) {
       where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { abstract: { contains: search, mode: 'insensitive' } },
-        { keywords: { contains: search, mode: 'insensitive' } },
+        { title: { contains: search} },
+        { abstract: { contains: search} },
+        { keywords: { contains: search} },
         {
           authors: {
             some: {
               author: {
-                name: { contains: search, mode: 'insensitive' }
+                name: { contains: search}
               }
             }
           }
@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
           eventEdition: {
             event: {
               OR: [
-                { name: { contains: search, mode: 'insensitive' } },
-                { shortName: { contains: search, mode: 'insensitive' } }
+                { name: { contains: search} },
+                { shortName: { contains: search} }
               ]
             }
           }
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         // Enhanced search: edition titles
         {
           eventEdition: {
-            title: { contains: search, mode: 'insensitive' }
+            title: { contains: search}
           }
         }
       ];
