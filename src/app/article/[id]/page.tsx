@@ -87,30 +87,32 @@ export default function ArticlePage() {
               <div className="border-t pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Full Text</h3>
-                  <button
-                    onClick={() => setIsPdfVisible(!isPdfVisible)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    {isPdfVisible ? 'Hide PDF' : 'View PDF'}
-                  </button>
+                  {article.pdfUrl && (
+                    <button
+                      onClick={() => setIsPdfVisible(!isPdfVisible)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      {isPdfVisible ? 'Hide PDF' : 'View PDF'}
+                    </button>
+                  )}
                 </div>
-                {isPdfVisible && (
+                {isPdfVisible && article.pdfUrl && (
                   <div className="border rounded-lg overflow-hidden bg-gray-100">
-                    <div className="h-96 flex items-center justify-center text-gray-500">
-                      <div className="text-center">
-                        <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                        <p>PDF viewer would be embedded here</p>
-                        <p className="text-sm mt-2">In a real implementation, you would use a PDF.js viewer or similar</p>
-                        <a
-                          href={article.pdfUrl}
-                          className="text-blue-600 hover:text-blue-800 underline mt-2 inline-block"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Download PDF
-                        </a>
-                      </div>
+                    <iframe
+                      src={article.pdfUrl}
+                      className="w-full h-[800px]"
+                      title="PDF Viewer"
+                      style={{ border: 'none' }}
+                    />
+                  </div>
+                )}
+                {!article.pdfUrl && (
+                  <div className="border rounded-lg overflow-hidden bg-gray-50 p-8">
+                    <div className="text-center text-gray-500">
+                      <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                      <p className="text-lg font-medium text-gray-700 mb-2">PDF Not Available</p>
+                      <p className="text-sm">The full text PDF for this article is not currently available.</p>
                     </div>
                   </div>
                 )}
@@ -167,15 +169,48 @@ export default function ArticlePage() {
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
               <div className="space-y-3">
-                <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center">
+                <button
+                  onClick={async () => {
+                    if (!article.pdfUrl) {
+                      alert('PDF not available for this article');
+                      return;
+                    }
+
+                    try {
+                      // For local files (starts with /), use fetch to download
+                      if (article.pdfUrl.startsWith('/')) {
+                        const response = await fetch(article.pdfUrl);
+                        if (!response.ok) {
+                          throw new Error('PDF not found');
+                        }
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `${article.title.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(url);
+                      } else {
+                        // For external URLs, open in new tab
+                        window.open(article.pdfUrl, '_blank', 'noopener,noreferrer');
+                      }
+                    } catch (error) {
+                      console.error('Error downloading PDF:', error);
+                      alert('Failed to download PDF. Please try again.');
+                    }
+                  }}
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!article.pdfUrl}
+                >
                   <Download className="h-4 w-4 mr-2" />
-                  Download PDF
+                  {article.pdfUrl ? 'Download PDF' : 'PDF Not Available'}
                 </button>
-                <button className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center">
-                  <Heart className="h-4 w-4 mr-2" />
-                  Save to Library
-                </button>
-                <button className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center">
+                <button
+                  onClick={() => navigator.share ? navigator.share({ title: article.title, url: window.location.href }) : console.log('Share clicked')}
+                  className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center"
+                >
                   <Share2 className="h-4 w-4 mr-2" />
                   Share Article
                 </button>
