@@ -249,7 +249,7 @@ export default function ArticlePage() {
                 >
                   <Download className="h-4 w-4 mr-2" />
                   {article.pdfUrl ? 'Download PDF' : 'PDF Not Available'}
-                </a>
+                </button>
                 <button
                   onClick={() => navigator.share ? navigator.share({ title: article.title, url: window.location.href }) : console.log('Share clicked')}
                   className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center"
