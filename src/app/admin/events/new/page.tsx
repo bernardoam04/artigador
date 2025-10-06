@@ -136,7 +136,7 @@ export default function NewEventPage() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="e.g., Brazilian Symposium on Software Engineering"
               />
             </div>
@@ -150,7 +150,7 @@ export default function NewEventPage() {
                 required
                 value={formData.shortName}
                 onChange={(e) => setFormData(prev => ({ ...prev, shortName: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="e.g., SBES"
               />
             </div>
@@ -165,7 +165,7 @@ export default function NewEventPage() {
               rows={4}
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
               placeholder="Brief description of the event..."
             />
           </div>
@@ -180,7 +180,7 @@ export default function NewEventPage() {
                 required
                 value={formData.organizer}
                 onChange={(e) => setFormData(prev => ({ ...prev, organizer: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="e.g., Brazilian Computer Society (SBC)"
               />
             </div>
@@ -194,7 +194,7 @@ export default function NewEventPage() {
                 required
                 value={formData.field}
                 onChange={(e) => setFormData(prev => ({ ...prev, field: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="e.g., Software Engineering"
               />
             </div>
@@ -208,7 +208,7 @@ export default function NewEventPage() {
               type="url"
               value={formData.website}
               onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
               placeholder="https://example.com"
             />
           </div>
@@ -225,7 +225,7 @@ export default function NewEventPage() {
                     type="text"
                     value={topic}
                     onChange={(e) => updateTopic(index, e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                     placeholder="e.g., software engineering"
                   />
                   {formData.topics.length > 1 && (

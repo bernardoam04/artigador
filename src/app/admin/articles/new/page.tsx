@@ -182,7 +182,7 @@ export default function NewArticlePage() {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                   placeholder="Enter article title"
                 />
               </div>
@@ -195,7 +195,7 @@ export default function NewArticlePage() {
                   rows={6}
                   value={formData.abstract}
                   onChange={(e) => setFormData(prev => ({ ...prev, abstract: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                   placeholder="Enter article abstract..."
                 />
               </div>
@@ -208,7 +208,7 @@ export default function NewArticlePage() {
                   type="text"
                   value={formData.keywords}
                   onChange={(e) => setFormData(prev => ({ ...prev, keywords: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                   placeholder="machine learning, artificial intelligence, deep learning"
                 />
                 <p className="text-xs text-gray-500 mt-1">Separate keywords with commas</p>
@@ -223,7 +223,7 @@ export default function NewArticlePage() {
                     type="text"
                     value={formData.doi}
                     onChange={(e) => setFormData(prev => ({ ...prev, doi: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                     placeholder="10.1000/182"
                   />
                 </div>
@@ -236,7 +236,7 @@ export default function NewArticlePage() {
                     type="text"
                     value={formData.pages}
                     onChange={(e) => setFormData(prev => ({ ...prev, pages: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                     placeholder="1-10 or 45-67"
                   />
                 </div>
@@ -251,7 +251,7 @@ export default function NewArticlePage() {
                     type="url"
                     value={formData.url}
                     onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                     placeholder="https://example.com/article"
                   />
                 </div>
@@ -264,7 +264,7 @@ export default function NewArticlePage() {
                     type="text"
                     value={formData.pdfPath}
                     onChange={(e) => setFormData(prev => ({ ...prev, pdfPath: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                     placeholder="/pdfs/article.pdf or https://example.com/paper.pdf"
                   />
                 </div>
@@ -283,7 +283,7 @@ export default function NewArticlePage() {
                 </label>
                 <select
                   onChange={(e) => handleEventChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 >
                   <option value="">Select an event</option>
                   {events.map((event) => (
@@ -302,7 +302,7 @@ export default function NewArticlePage() {
                   required
                   value={formData.eventEditionId}
                   onChange={(e) => setFormData(prev => ({ ...prev, eventEditionId: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                   disabled={availableEditions.length === 0}
                 >
                   <option value="">Select an edition</option>

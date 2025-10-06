@@ -179,7 +179,7 @@ export default function EditEditionPage() {
                 max="2100"
                 value={formData.year}
                 onChange={(e) => setFormData(prev => ({ ...prev, year: parseInt(e.target.value) }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
               />
             </div>
 
@@ -192,7 +192,7 @@ export default function EditEditionPage() {
                 required
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="e.g., SBES 2024"
               />
             </div>
@@ -206,7 +206,7 @@ export default function EditEditionPage() {
               rows={4}
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
               placeholder="Brief description of this edition..."
             />
           </div>
@@ -220,7 +220,7 @@ export default function EditEditionPage() {
                 type="text"
                 value={formData.location}
                 onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="e.g., São Paulo, Brazil"
               />
             </div>
@@ -233,7 +233,7 @@ export default function EditEditionPage() {
                 type="url"
                 value={formData.website}
                 onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="https://example.com"
               />
             </div>
@@ -251,7 +251,7 @@ export default function EditEditionPage() {
                   type="date"
                   value={formData.startDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 />
               </div>
 
@@ -263,7 +263,7 @@ export default function EditEditionPage() {
                   type="date"
                   value={formData.endDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 />
               </div>
             </div>
@@ -281,7 +281,7 @@ export default function EditEditionPage() {
                   type="date"
                   value={formData.submissionDeadline}
                   onChange={(e) => setFormData(prev => ({ ...prev, submissionDeadline: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 />
               </div>
 
@@ -293,7 +293,7 @@ export default function EditEditionPage() {
                   type="date"
                   value={formData.notificationDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, notificationDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 />
               </div>
 
@@ -305,7 +305,7 @@ export default function EditEditionPage() {
                   type="date"
                   value={formData.cameraReadyDeadline}
                   onChange={(e) => setFormData(prev => ({ ...prev, cameraReadyDeadline: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 />
               </div>
             </div>

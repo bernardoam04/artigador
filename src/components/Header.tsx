@@ -26,7 +26,7 @@ export default function Header() {
           {/* Search Bar */}
           <div className="flex-1 max-w-2xl mx-8">
             <SearchWithSuggestions
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 text-black"
               iconClassName="text-gray-400"
               onSearch={(query) => {
                 window.location.href = `/browse?q=${encodeURIComponent(query)}`;

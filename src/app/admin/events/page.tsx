@@ -2,7 +2,7 @@
 
 import AdminLayout from '@/components/AdminLayout';
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Calendar, ExternalLink, BookOpen } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar, ExternalLink, BookOpen, Eye } from 'lucide-react';
 import Link from 'next/link';
 
 interface Event {
@@ -191,6 +191,13 @@ export default function EventsPage() {
                         <ExternalLink className="h-4 w-4" />
                       </a>
                     )}
+                    <Link
+                      href={`/${event.shortName.toLowerCase()}`}
+                      className="text-gray-400 hover:text-purple-600"
+                      title="View public event page"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Link>
                     <Link
                       href={`/admin/events/${event.id}/editions`}
                       className="text-gray-400 hover:text-green-600"

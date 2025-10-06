@@ -248,7 +248,7 @@ export default function ImportPage() {
                   <select
                     required
                     onChange={(e) => handleEventChange(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                   >
                     <option value="">Select an event</option>
                     {events.map((event) => (
@@ -267,7 +267,7 @@ export default function ImportPage() {
                     required
                     value={formData.eventEditionId}
                     onChange={(e) => setFormData(prev => ({ ...prev, eventEditionId: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                     disabled={availableEditions.length === 0}
                   >
                     <option value="">Select an edition</option>
