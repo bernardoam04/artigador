@@ -127,19 +127,19 @@ export default function ArticlePage() {
                 <div className="flex items-center text-sm">
                   <Calendar className="h-4 w-4 text-gray-400 mr-2" />
                   <span className="text-gray-600">Published:</span>
-                  <span className="ml-2 font-medium">
+                  <span className="ml-2 font-medium text-gray-400">
                     {format(new Date(article.publishedDate), 'MMM dd, yyyy')}
                   </span>
                 </div>
                 <div className="flex items-center text-sm">
                   <Download className="h-4 w-4 text-gray-400 mr-2" />
                   <span className="text-gray-600">Downloads:</span>
-                  <span className="ml-2 font-medium">{article.downloads.toLocaleString()}</span>
+                  <span className="ml-2 font-medium text-gray-400">{article.downloads.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center text-sm">
                   <Heart className="h-4 w-4 text-gray-400 mr-2" />
                   <span className="text-gray-600">Citations:</span>
-                  <span className="ml-2 font-medium">{article.citationCount}</span>
+                  <span className="ml-2 font-medium text-gray-400">{article.citationCount}</span>
                 </div>
                 {article.doi && (
                   <div className="text-sm">
@@ -157,7 +157,7 @@ export default function ArticlePage() {
                 {article.venue && (
                   <div className="text-sm">
                     <span className="text-gray-600">Venue:</span>
-                    <span className="ml-2 font-medium">{article.venue.name} {article.venue.year}</span>
+                    <span className="ml-2 font-medium text-gray-400">{article.venue.name} {article.venue.year}</span>
                   </div>
                 )}
               </div>
