@@ -20,6 +20,7 @@ export interface BibTeXEntry {
   address?: string;
   month?: string;
   note?: string;
+  location?: string;
 }
 
 export interface ParsedAuthor {
@@ -30,7 +31,7 @@ export interface ParsedAuthor {
 
 export function parseBibTeX(bibtexContent: string): BibTeXEntry[] {
   const entries: BibTeXEntry[] = [];
-  
+
   // Remove comments and clean up the content
   const cleanContent = bibtexContent
     .replace(/%.*$/gm, '') // Remove comments
@@ -43,7 +44,7 @@ export function parseBibTeX(bibtexContent: string): BibTeXEntry[] {
 
   while ((match = entryRegex.exec(cleanContent)) !== null) {
     const [, type, key, fields] = match;
-    
+
     const entry: BibTeXEntry = {
       type: type.toLowerCase(),
       key: key.trim()
@@ -132,6 +133,9 @@ export function parseBibTeX(bibtexContent: string): BibTeXEntry[] {
         case 'note':
           entry.note = cleanFieldValue;
           break;
+        case 'location':
+          entry.location = cleanFieldValue;
+          break;
       }
     }
 
@@ -146,10 +150,10 @@ export function parseAuthors(authorString: string): ParsedAuthor[] {
 
   // Split by 'and' (case insensitive)
   const authorParts = authorString.split(/\s+and\s+/i);
-  
+
   return authorParts.map(authorPart => {
     const cleanAuthor = authorPart.trim();
-    
+
     // Try to extract email if present
     const emailMatch = cleanAuthor.match(/([^<]+)<([^>]+)>/);
     if (emailMatch) {
@@ -190,7 +194,7 @@ export function bibtexEntryToArticle(entry: BibTeXEntry): {
   year?: number;
 } {
   const authors = parseAuthors(entry.author || '');
-  
+
   // Determine venue (journal, conference, etc.)
   let venue = entry.journal || entry.booktitle;
   if (entry.volume) {

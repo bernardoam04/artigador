@@ -37,12 +37,15 @@ export default function ImportPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [availableEditions, setAvailableEditions] = useState<Event['editions']>([]);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
-  
+
   const [formData, setFormData] = useState({
     eventEditionId: '',
     defaultCategories: [] as string[],
     bibtexContent: ''
   });
+
+  const [bibFile, setBibFile] = useState<File | null>(null);
+  const [zipFile, setZipFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchEvents();
@@ -88,12 +91,20 @@ export default function ImportPage() {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setBibFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         const content = e.target?.result as string;
         setFormData(prev => ({ ...prev, bibtexContent: content }));
       };
       reader.readAsText(file);
+    }
+  };
+
+  const handleZipUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setZipFile(file);
     }
   };
 
@@ -113,13 +124,32 @@ export default function ImportPage() {
 
     try {
       const token = localStorage.getItem('artigador_token');
+
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('eventEditionId', formData.eventEditionId);
+      formDataToSend.append('defaultCategories', JSON.stringify(formData.defaultCategories));
+
+      // Add BibTeX file or content
+      if (bibFile) {
+        formDataToSend.append('bibtexFile', bibFile);
+      } else {
+        // Create a blob from textarea content
+        const blob = new Blob([formData.bibtexContent], { type: 'text/plain' });
+        formDataToSend.append('bibtexFile', blob, 'upload.bib');
+      }
+
+      // Add ZIP file if provided
+      if (zipFile) {
+        formDataToSend.append('pdfZip', zipFile);
+      }
+
       const response = await fetch('/api/admin/import/bibtex', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: formDataToSend
       });
 
       const data = await response.json();
@@ -128,9 +158,13 @@ export default function ImportPage() {
         setImportResult(data.results);
         // Clear form on success
         setFormData(prev => ({ ...prev, bibtexContent: '' }));
-        // Reset file input
+        setBibFile(null);
+        setZipFile(null);
+        // Reset file inputs
         const fileInput = document.getElementById('bibtex-file') as HTMLInputElement;
+        const zipInput = document.getElementById('zip-file') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
+        if (zipInput) zipInput.value = '';
       } else {
         alert(data.error || 'Error importing BibTeX');
       }
@@ -145,8 +179,12 @@ export default function ImportPage() {
   const resetImport = () => {
     setImportResult(null);
     setFormData(prev => ({ ...prev, bibtexContent: '' }));
+    setBibFile(null);
+    setZipFile(null);
     const fileInput = document.getElementById('bibtex-file') as HTMLInputElement;
+    const zipInput = document.getElementById('zip-file') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
+    if (zipInput) zipInput.value = '';
   };
 
   return (
@@ -171,7 +209,7 @@ export default function ImportPage() {
                 Start New Import
               </button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div className="flex items-center p-3 bg-green-50 rounded-lg">
                 <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
@@ -180,7 +218,7 @@ export default function ImportPage() {
                   <div className="text-sm text-green-600">Imported</div>
                 </div>
               </div>
-              
+
               <div className="flex items-center p-3 bg-red-50 rounded-lg">
                 <XCircle className="h-5 w-5 text-red-500 mr-2" />
                 <div>
@@ -188,7 +226,7 @@ export default function ImportPage() {
                   <div className="text-sm text-red-600">Failed</div>
                 </div>
               </div>
-              
+
               <div className="flex items-center p-3 bg-blue-50 rounded-lg">
                 <FileText className="h-5 w-5 text-blue-500 mr-2" />
                 <div>
@@ -237,9 +275,9 @@ export default function ImportPage() {
         {!importResult && (
           <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-lg border p-6">
             {/* Event Selection */}
-            <div>
+            <div className='text-black'>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Target Event & Edition</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -288,7 +326,7 @@ export default function ImportPage() {
                 <p className="text-sm text-gray-500 mb-3">
                   These categories will be applied to all imported articles
                 </p>
-                
+
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {categories.map((category) => (
                     <label key={category.id} className="flex items-center">
@@ -308,7 +346,7 @@ export default function ImportPage() {
             {/* BibTeX Content */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">BibTeX Content</h3>
-              
+
               <div className="space-y-4">
                 {/* File Upload */}
                 <div>
@@ -329,17 +367,35 @@ export default function ImportPage() {
                   </p>
                 </div>
 
+                {/* ZIP Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Upload ZIP with PDFs
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <input
+                      id="zip-file"
+                      type="file"
+                      accept=".zip"
+                      onChange={handleZipUpload}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    PDFs must be named exactly as BibTeX keys (e.g., sbes-paper1.pdf)
+                  </p>
+                </div>
+
                 {/* Text Area */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Or Paste BibTeX Content *
                   </label>
                   <textarea
-                    required
                     rows={12}
                     value={formData.bibtexContent}
                     onChange={(e) => setFormData(prev => ({ ...prev, bibtexContent: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 font-mono text-sm text-gray-700"
                     placeholder="@article{key2023,
   title={Article Title},
   author={John Doe and Jane Smith},

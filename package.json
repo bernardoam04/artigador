@@ -20,7 +20,8 @@
     "nodemailer": "^7.0.5",
     "prisma": "^6.14.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "adm-zip": "^0.5.10"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
