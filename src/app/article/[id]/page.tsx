@@ -201,7 +201,7 @@ export default function ArticlePage() {
                   <div className="text-sm">
                     <span className="text-gray-600">Event:</span>
                     <span className="ml-2 font-medium">
-                      {article.eventEdition.name} ({article.eventEdition.year})
+                      {article.eventEdition.event.name} ({article.eventEdition.year})
                     </span>
                   </div>
                 )}
