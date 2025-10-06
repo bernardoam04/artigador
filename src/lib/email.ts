@@ -138,7 +138,7 @@ export const emailTemplates = {
           </div>
           
           <div style="background: #F9FAFB; padding: 20px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
-            <p style="margin: 0; color: #6B7280; font-size: 14px;">© 2024 Artigador. All rights reserved.</p>
+            <p style="margin: 0; color: #6B7280; font-size: 14px;">© 2025 Artigador. All rights reserved.</p>
           </div>
         </div>
       `,
@@ -188,7 +188,7 @@ export const emailTemplates = {
         
         <div style="background: #F9FAFB; padding: 20px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
           <p style="margin: 0; color: #6B7280; font-size: 14px;">
-            © 2024 Artigador. All rights reserved.<br>
+            © 2025 Artigador. All rights reserved.<br>
             <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #6B7280; text-decoration: underline;">Unsubscribe</a>
           </p>
         </div>

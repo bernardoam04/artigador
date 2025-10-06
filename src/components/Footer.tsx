@@ -13,7 +13,7 @@ export default function Footer() {
               <span className="text-xl font-bold">Artigador.com</span>
             </div>
             <p className="text-gray-300 mb-4">
-              A modern academic article library providing easy access to scientific publications 
+              A modern academic article library providing easy access to scientific publications
               and research papers across multiple disciplines.
             </p>
             <div className="flex space-x-4">
@@ -47,7 +47,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Artigador.com. All rights reserved.</p>
+          <p>&copy; 2025 Artigador.com. All rights reserved.</p>
         </div>
       </div>
     </footer>
