@@ -211,7 +211,7 @@ export default function SubscribePage() {
             <div className="text-xs text-gray-500 text-center">
               <p>
                 By subscribing, you agree to receive periodic emails from Artigador. 
-                You can unsubscribe at any time. We respect your privacy and will never share your email.
+                You can <Link href="/unsubscribe" className="underline hover:text-blue-600">unsubscribe at any time</Link>. We respect your privacy and will never share your email.
               </p>
             </div>
           </form>
