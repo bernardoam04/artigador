@@ -35,13 +35,15 @@ export default function EditEditionPage() {
     year: new Date().getFullYear(),
     title: '',
     description: '',
-    location: '',
+    city: '',
+    country: '',
+    venue: '',
     website: '',
     startDate: '',
     endDate: '',
     submissionDeadline: '',
     notificationDate: '',
-    cameraReadyDeadline: ''
+    cameraReadyDate: ''
   });
 
   useEffect(() => {
@@ -65,16 +67,18 @@ export default function EditEditionPage() {
         };
 
         setFormData({
-          year: editionData.year,
-          title: editionData.title,
+          year: editionData.year || new Date().getFullYear(),
+          title: editionData.title || '',
           description: editionData.description || '',
-          location: editionData.location || '',
+          city: editionData.city || '',
+          country: editionData.country || '',
+          venue: editionData.venue || '',
           website: editionData.website || '',
           startDate: formatDate(editionData.startDate),
           endDate: formatDate(editionData.endDate),
           submissionDeadline: formatDate(editionData.submissionDeadline),
           notificationDate: formatDate(editionData.notificationDate),
-          cameraReadyDeadline: formatDate(editionData.cameraReadyDeadline)
+          cameraReadyDate: formatDate(editionData.cameraReadyDate)
         });
       }
     } catch (error) {
@@ -99,11 +103,9 @@ export default function EditEditionPage() {
         body: JSON.stringify({
           ...formData,
           year: parseInt(formData.year.toString()),
-          startDate: formData.startDate || null,
-          endDate: formData.endDate || null,
           submissionDeadline: formData.submissionDeadline || null,
           notificationDate: formData.notificationDate || null,
-          cameraReadyDeadline: formData.cameraReadyDeadline || null
+          cameraReadyDate: formData.cameraReadyDate || null
         })
       });
 
@@ -178,7 +180,7 @@ export default function EditEditionPage() {
                 min="1900"
                 max="2100"
                 value={formData.year}
-                onChange={(e) => setFormData(prev => ({ ...prev, year: parseInt(e.target.value) }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, year: parseInt(e.target.value) || new Date().getFullYear() }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
               />
             </div>
@@ -211,32 +213,58 @@ export default function EditEditionPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location
+                City
               </label>
               <input
                 type="text"
-                value={formData.location}
-                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                value={formData.city}
+                onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
-                placeholder="e.g., São Paulo, Brazil"
+                placeholder="e.g., São Paulo"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Website
+                Country
               </label>
               <input
-                type="url"
-                value={formData.website}
-                onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                type="text"
+                value={formData.country}
+                onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
-                placeholder="https://example.com"
+                placeholder="e.g., Brazil"
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Venue
+              </label>
+              <input
+                type="text"
+                value={formData.venue}
+                onChange={(e) => setFormData(prev => ({ ...prev, venue: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
+                placeholder="e.g., University of São Paulo"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Website
+            </label>
+            <input
+              type="url"
+              value={formData.website}
+              onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
+              placeholder="https://example.com"
+            />
           </div>
 
           {/* Event Dates */}
@@ -299,12 +327,12 @@ export default function EditEditionPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Camera Ready Deadline
+                  Camera Ready Date
                 </label>
                 <input
                   type="date"
-                  value={formData.cameraReadyDeadline}
-                  onChange={(e) => setFormData(prev => ({ ...prev, cameraReadyDeadline: e.target.value }))}
+                  value={formData.cameraReadyDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cameraReadyDate: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 />
               </div>
