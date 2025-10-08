@@ -60,13 +60,15 @@ export async function PUT(
       year, 
       title, 
       description, 
-      location, 
+      city,
+      country,
+      venue,
       website, 
       startDate, 
       endDate, 
       submissionDeadline,
       notificationDate,
-      cameraReadyDeadline 
+      cameraReadyDate 
     } = body;
 
     const edition = await prisma.eventEdition.update({
@@ -75,13 +77,15 @@ export async function PUT(
         year: parseInt(year),
         title,
         description,
-        location,
+        city,
+        country,
+        venue,
         website,
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
         submissionDeadline: submissionDeadline ? new Date(submissionDeadline) : null,
         notificationDate: notificationDate ? new Date(notificationDate) : null,
-        cameraReadyDeadline: cameraReadyDeadline ? new Date(cameraReadyDeadline) : null
+        cameraReadyDate: cameraReadyDate ? new Date(cameraReadyDate) : null
       },
       include: {
         event: true,

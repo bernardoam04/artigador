@@ -168,9 +168,15 @@ export default function EventEditionsPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {edition.title || ` ${edition.year}`}
-                      </h3>
+                      <Link 
+                        href={`/editions/${edition.id}`}
+                        className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+                      >
+                        {edition.title || `${event?.shortName} ${edition.year}`}
+                      </Link>
+                      <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full font-medium">
+                        {edition.year}
+                      </span>
                     </div>
 
                     {edition.description && (
@@ -192,10 +198,13 @@ export default function EventEditionsPage() {
                             ` - ${formatDate(edition.endDate)}`}
                         </div>
                       )}
-                      <div className="flex items-center text-sm text-gray-600">
+                      <Link 
+                        href={`/editions/${edition.id}`}
+                        className="flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                      >
                         <Users className="h-4 w-4 mr-1 text-gray-400" />
                         {edition._count.articles} article(s)
-                      </div>
+                      </Link>
                     </div>
 
                     {/* Important Dates */}
