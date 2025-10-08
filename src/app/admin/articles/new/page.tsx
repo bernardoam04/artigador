@@ -87,10 +87,47 @@ export default function NewArticlePage() {
     }
   };
 
+  const generateDOI = (title: string, eventEditionId: string) => {
+    if (!title || !eventEditionId) return '';
+    
+    const selectedEvent = events.find(event => 
+      event.editions.some(edition => edition.id === eventEditionId)
+    );
+    const selectedEdition = selectedEvent?.editions.find(edition => edition.id === eventEditionId);
+    
+    if (!selectedEvent || !selectedEdition) return '';
+    
+    // Generate a slug from the title (simplified)
+    const titleSlug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .replace(/\s+/g, '-')
+      .slice(0, 50);
+    
+    // Create DOI format: 10.{conference}/{year}.{title-slug}
+    return `10.${selectedEvent.shortName.toLowerCase()}/${selectedEdition.year}.${titleSlug}`;
+  };
+
   const handleEventChange = (eventId: string) => {
     const selectedEvent = events.find(event => event.id === eventId);
     setAvailableEditions(selectedEvent?.editions || []);
-    setFormData(prev => ({ ...prev, eventEditionId: '' }));
+    setFormData(prev => ({ ...prev, eventEditionId: '', doi: '' }));
+  };
+
+  const handleEditionChange = (eventEditionId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      eventEditionId,
+      doi: generateDOI(prev.title, eventEditionId)
+    }));
+  };
+
+  const handleTitleChange = (title: string) => {
+    setFormData(prev => ({
+      ...prev,
+      title,
+      doi: generateDOI(title, prev.eventEditionId)
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -181,7 +218,7 @@ export default function NewArticlePage() {
                   type="text"
                   required
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) => handleTitleChange(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                   placeholder="Enter article title"
                 />
@@ -217,15 +254,16 @@ export default function NewArticlePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    DOI
+                    DOI (Auto-generated)
                   </label>
                   <input
                     type="text"
                     value={formData.doi}
-                    onChange={(e) => setFormData(prev => ({ ...prev, doi: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
-                    placeholder="10.1000/182"
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600 cursor-not-allowed"
+                    placeholder="Will be generated automatically when title and edition are selected"
                   />
+                  <p className="text-xs text-gray-500 mt-1">DOI is automatically generated based on the title and conference edition</p>
                 </div>
 
                 <div>
@@ -301,7 +339,7 @@ export default function NewArticlePage() {
                 <select
                   required
                   value={formData.eventEditionId}
-                  onChange={(e) => setFormData(prev => ({ ...prev, eventEditionId: e.target.value }))}
+                  onChange={(e) => handleEditionChange(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                   disabled={availableEditions.length === 0}
                 >
