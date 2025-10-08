@@ -37,7 +37,7 @@ export default function EventsPage() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setEvents(data);
@@ -142,21 +142,21 @@ export default function EventsPage() {
                         </span>
                       )}
                     </div>
-                    
+
                     <p className="text-gray-600 mb-3 line-clamp-2">{event.description}</p>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div>
                         <span className="text-gray-500">Organizer:</span>
-                        <p className="font-medium">{event.organizer}</p>
+                        <p className="font-medium text-gray-800">{event.organizer}</p>
                       </div>
                       <div>
                         <span className="text-gray-500">Field:</span>
-                        <p className="font-medium">{event.field}</p>
+                        <p className="font-medium text-gray-800">{event.field}</p>
                       </div>
                       <div>
                         <span className="text-gray-500">Editions:</span>
-                        <p className="font-medium">{event.editions.length} edition(s)</p>
+                        <p className="font-medium text-gray-800">{event.editions.length} edition(s)</p>
                       </div>
                     </div>
 
