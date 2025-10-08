@@ -32,8 +32,8 @@ interface Article {
       id: string;
       name: string;
       shortName: string;
-    };
-  };
+    } | null;
+  } | null;
   categories: Array<{
     category: {
       id: string;
@@ -79,7 +79,7 @@ export default function ArticlesPage() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setEvents(data);
@@ -105,7 +105,7 @@ export default function ArticlesPage() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setArticles(data.articles);
@@ -196,7 +196,7 @@ export default function ArticlesPage() {
                 />
               </div>
             </form>
-            
+
             <div className="flex gap-2">
               <div className="relative">
                 <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -275,12 +275,18 @@ export default function ArticlesPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm">
-                            <div className="font-medium text-gray-900">
-                              {article.eventEdition.event.shortName} {article.eventEdition.year}
-                            </div>
-                            <div className="text-gray-500 text-xs">
-                              {article.eventEdition.title}
-                            </div>
+                            {article.eventEdition ? (
+                              <>
+                                <div className="font-medium text-gray-900">
+                                  {article.eventEdition.event?.shortName || 'N/A'} {article.eventEdition.year}
+                                </div>
+                                <div className="text-gray-500 text-xs">
+                                  {article.eventEdition.title}
+                                </div>
+                              </>
+                            ) : (
+                              <span className="text-gray-400 text-xs">No event assigned</span>
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4">
