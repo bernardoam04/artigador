@@ -9,95 +9,156 @@ Este diagrama mostra a organização dos principais pacotes e suas dependências
 
 ```mermaid
 graph TB
-    subgraph "Frontend Layer"
-        subgraph "app/"
-            Pages[📄 Pages<br/>- page.tsx<br/>- layout.tsx<br/>- globals.css]
-            AdminPages[🔐 Admin Pages<br/>- /admin/*<br/>- Gerenciamento]
-            PublicPages[🌐 Public Pages<br/>- /authors/*<br/>- /articles/*<br/>- /events/*]
+    subgraph "Presentation Layer - Frontend"
+        subgraph "app/ - Next.js App Router"
+            RootLayout[📄 Root Layout<br/>- layout.tsx<br/>- globals.css<br/>- AuthProvider wrapper]
+            
+            PublicPages[🌐 Public Pages<br/>- / homepage<br/>- /authors & /authors/id<br/>- /article/id<br/>- /events & /events/id<br/>- /editions/id<br/>- /browse<br/>- /categories<br/>- /ranking<br/>- /subscribe & /unsubscribe<br/>- /shortName & /shortName/year]
+            
+            AuthPages[🔐 Auth Pages<br/>- /login]
+            
+            AdminPages[⚙️ Admin Pages<br/>- /admin dashboard<br/>- /admin/articles & new<br/>- /admin/events & new & edit<br/>- /admin/events/id/editions<br/>- /admin/import]
         end
         
         subgraph "components/"
-            UI[🎨 UI Components<br/>- Header<br/>- Footer<br/>- ArticleCard<br/>- SearchWithSuggestions]
-            AdminUI[⚙️ Admin Components<br/>- AdminLayout<br/>- Forms<br/>- Tables]
+            CoreUI[🎨 Core UI Components<br/>- Header navigation<br/>- Footer<br/>- ArticleCard<br/>- SearchWithSuggestions<br/>- NewsletterSignup]
+            
+            AdminUI[🛠️ Admin Components<br/>- AdminLayout<br/>- Protected routes wrapper]
         end
         
         subgraph "contexts/"
-            Context[🔄 React Contexts<br/>- AuthContext<br/>- State Management]
+            AuthContext[🔄 AuthContext<br/>- User state management<br/>- Login/logout handlers<br/>- Role validation<br/>- Token storage]
         end
     end
     
-    subgraph "API Layer"
+    subgraph "API Layer - Backend Routes"
         subgraph "app/api/"
-            PublicAPI[🌍 Public APIs<br/>- /articles<br/>- /authors<br/>- /events<br/>- /subscriptions]
-            AdminAPI[🔒 Admin APIs<br/>- /admin/*<br/>- Authentication Required]
-            AuthAPI[🔑 Auth APIs<br/>- /auth/login<br/>- JWT Management]
+            PublicAPI[🌍 Public APIs<br/><br/>Articles:<br/>- GET /articles list<br/>- GET /articles/id<br/>- GET /articles/search<br/><br/>Authors:<br/>- GET /authors list<br/>- GET /authors/id<br/><br/>Events:<br/>- GET /events list<br/>- GET /events/id<br/>- GET /events/shortname/name<br/>- GET /events/shortname/name/year<br/><br/>Editions:<br/>- GET /editions/id<br/><br/>Subscriptions:<br/>- POST /subscriptions<br/>- POST /subscriptions/unsubscribe<br/>- GET /subscriptions/unsubscribe<br/>- GET /subscriptions/confirm<br/>- GET /subscriptions list admin]
+            
+            AuthAPI[🔑 Authentication<br/>- POST /auth/login<br/>- JWT generation<br/>- Credential validation<br/>- GET /test-auth]
+            
+            AdminAPI[🔒 Admin APIs<br/>Requires JWT + ADMIN role<br/><br/>Articles:<br/>- GET /admin/articles<br/>- POST /admin/articles<br/>- GET /admin/articles/id<br/>- PUT /admin/articles/id<br/>- DELETE /admin/articles/id<br/><br/>Events:<br/>- GET /admin/events<br/>- POST /admin/events<br/>- GET /admin/events/id editions list<br/>- POST /admin/events/id create edition<br/><br/>Editions:<br/>- GET /admin/events/id/editions<br/>- POST /admin/events/id/editions<br/>- GET /admin/editions/id<br/>- PUT /admin/editions/id<br/>- DELETE /admin/editions/id<br/><br/>Categories:<br/>- GET /admin/categories<br/>- POST /admin/categories<br/><br/>Import:<br/>- POST /admin/import/bibtex<br/><br/>Seed:<br/>- POST /admin/seed]
         end
     end
     
     subgraph "Business Logic Layer"
         subgraph "lib/"
-            Auth[🛡️ Authentication<br/>- JWT Utils<br/>- Role Validation]
-            Email[📧 Email System<br/>- Nodemailer<br/>- Templates<br/>- SMTP]
-            Prisma[🗄️ Database Client<br/>- Prisma Client<br/>- Connection Pool]
-            Utils[🔧 Utilities<br/>- BibTeX Parser<br/>- Validators]
+            Auth[🛡️ Authentication lib/auth.ts<br/><br/>Functions:<br/>- hashPassword bcryptjs<br/>- verifyPassword bcryptjs<br/>- generateToken JWT<br/>- verifyToken JWT<br/>- authenticateUser<br/>- createUser<br/>- initializeAdminUser<br/><br/>Types:<br/>- AuthUser interface]
+            
+            Email[📧 Email System lib/email.ts<br/><br/>Functions:<br/>- sendEmail nodemailer<br/>- emailTemplates<br/>  * newArticleNotification<br/>  * eventArticleNotification<br/>  * welcomeEmail<br/>  * subscriptionConfirmation<br/>  * subscriptionWelcome<br/><br/>Config:<br/>- SMTP transporter<br/>- Gmail/Custom SMTP]
+            
+            BibTeX[📚 BibTeX Parser lib/bibtex.ts<br/><br/>Functions:<br/>- parseBibTeX<br/>- parseAuthors<br/>- bibtexEntryToArticle<br/><br/>Types:<br/>- BibTeXEntry<br/>- ParsedAuthor<br/><br/>Features:<br/>- Entry parsing<br/>- Field extraction<br/>- Author parsing<br/>- Data normalization]
+            
+            PrismaClient[🗄️ Database Client lib/prisma.ts<br/><br/>- PrismaClient singleton<br/>- Global instance<br/>- Connection pooling<br/>- Type-safe queries]
+            
+            Seed[🌱 Database Seeding lib/seed.ts<br/><br/>Functions:<br/>- seedCategories<br/>- Initial data setup]
         end
     end
     
     subgraph "Data Layer"
         subgraph "prisma/"
-            Schema[📋 Database Schema<br/>- Models<br/>- Relations<br/>- Migrations]
-            DB[(🗃️ SQLite Database<br/>- dev.db<br/>- Production Ready)]
+            Schema[📋 Schema Definition schema.prisma<br/><br/>Models:<br/>- User username, email, role<br/>- Category hierarchical<br/>- Event shortName, topics<br/>- EventEdition year, venue<br/>- Author name, email, orcid<br/>- Article title, abstract, keywords<br/>- ArticleAuthor M:N + order<br/>- ArticleCategory M:N<br/>- EventCategory M:N<br/>- EmailSubscription filters<br/>- ImportLog tracking<br/>- Subscription newsletter<br/><br/>Enums:<br/>- Role USER, ADMIN<br/>- ArticleStatus<br/>- ImportType BIBTEX, CSV, JSON<br/>- ImportStatus]
+            
+            DB[(🗃️ SQLite Database<br/>- dev.db<br/>- File-based<br/>- Zero-config<br/>- Local development)]
         end
         
-        subgraph "External Storage"
-            Files[📁 File System<br/>- /public/uploads<br/>- PDF Storage]
+        subgraph "File Storage"
+            Uploads[📁 public/uploads/<br/><br/>Directories:<br/>- /imports/timestamp/<br/>  * BibTeX imported PDFs<br/>  * ZIP extracted files<br/><br/>Access:<br/>- Public static serving<br/>- Next.js public folder]
+            
+            StaticFiles[📄 public/<br/><br/>Files:<br/>- SVG icons<br/>- /pdfs/ sample papers<br/>- Static assets]
         end
     end
     
-    subgraph "Configuration & Types"
+    subgraph "Type System"
         subgraph "types/"
-            Types[📝 TypeScript Types<br/>- Article<br/>- Event<br/>- Author<br/>- User]
+            TypeDefs[📝 TypeScript Definitions<br/><br/>Files:<br/>- article.ts interfaces<br/>- event.ts interfaces<br/>- adm-zip.d.ts declarations<br/><br/>Shared across:<br/>- Frontend components<br/>- API routes<br/>- Business logic]
         end
         
         subgraph "data/"
-            MockData[🎭 Mock Data<br/>- Categories<br/>- Sample Articles<br/>- Test Data]
+            StaticData[🎭 Static Data<br/><br/>Files:<br/>- categories.ts hierarchy<br/>- mockArticles.ts testing<br/>- mockEvents.ts testing<br/>- realArticles.ts samples<br/><br/>Purpose:<br/>- Development data<br/>- Testing fixtures<br/>- Initial categories]
         end
     end
     
     subgraph "External Services"
-        SMTP[📮 SMTP Provider<br/>- Gmail<br/>- SendGrid<br/>- AWS SES]
+        SMTP[📮 SMTP Email Provider<br/><br/>Supported:<br/>- Gmail App Password<br/>- SendGrid<br/>- AWS SES<br/>- Custom SMTP<br/><br/>Used by:<br/>- Subscription confirmations<br/>- Article notifications<br/>- System emails]
+        
+        AdmZip[📦 AdmZip Library<br/><br/>Package: adm-zip<br/><br/>Used in:<br/>- /admin/import/bibtex<br/>- ZIP extraction<br/>- PDF file handling<br/>- Batch imports]
+    end
+    
+    subgraph "External Libraries"
+        NextJS[⚡ Next.js 15.4.7<br/>- App Router<br/>- React 19.1.0<br/>- Turbopack dev]
+        
+        UILibs[🎨 UI Libraries<br/>- Tailwind CSS 4<br/>- Lucide React icons<br/>- Headless UI<br/>- date-fns<br/>- clsx]
+        
+        AuthLibs[🔐 Auth Libraries<br/>- bcryptjs hashing<br/>- jsonwebtoken JWT]
     end
 
-    %% Dependencies
-    Pages --> UI
-    Pages --> Context
+    %% Frontend Dependencies
+    RootLayout --> AuthContext
+    RootLayout --> CoreUI
+    PublicPages --> CoreUI
+    PublicPages --> PublicAPI
+    AuthPages --> AuthAPI
     AdminPages --> AdminUI
-    AdminPages --> Auth
-    PublicPages --> UI
+    AdminPages --> AdminAPI
     
-    UI --> PublicAPI
-    AdminUI --> AdminAPI
-    Context --> AuthAPI
+    CoreUI --> AuthContext
+    CoreUI --> PublicAPI
+    AdminUI --> AuthContext
     
-    PublicAPI --> Prisma
-    PublicAPI --> Utils
-    AdminAPI --> Auth
-    AdminAPI --> Prisma
-    AdminAPI --> Files
+    AuthContext --> AuthAPI
+    AuthContext --> Auth
+    
+    %% API Layer Dependencies
+    PublicAPI --> PrismaClient
+    PublicAPI --> TypeDefs
     AuthAPI --> Auth
-    AuthAPI --> Prisma
+    AuthAPI --> PrismaClient
     
-    Auth --> Prisma
+    AdminAPI --> Auth
+    AdminAPI --> PrismaClient
+    AdminAPI --> BibTeX
+    AdminAPI --> Uploads
+    AdminAPI --> AdmZip
+    AdminAPI --> Seed
+    
+    %% Business Logic Dependencies
+    Auth --> PrismaClient
+    Auth --> AuthLibs
     Email --> SMTP
-    Prisma --> Schema
+    BibTeX --> TypeDefs
+    Seed --> PrismaClient
+    Seed --> StaticData
+    
+    %% Data Layer Dependencies
+    PrismaClient --> Schema
     Schema --> DB
     
-    Utils --> Types
-    Prisma --> Types
-    PublicAPI --> Types
-    AdminAPI --> Types
+    %% Type System Dependencies
+    TypeDefs --> Schema
+    StaticData --> TypeDefs
     
-    MockData --> Types
+    %% Framework Dependencies
+    RootLayout --> NextJS
+    PublicPages --> NextJS
+    AdminPages --> NextJS
+    CoreUI --> UILibs
+    PublicAPI --> NextJS
+    AuthAPI --> NextJS
+    AdminAPI --> NextJS
+    
+    %% Styling
+    classDef frontend fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef api fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef logic fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef data fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class RootLayout,PublicPages,AuthPages,AdminPages,CoreUI,AdminUI,AuthContext frontend
+    class PublicAPI,AuthAPI,AdminAPI api
+    class Auth,Email,BibTeX,PrismaClient,Seed logic
+    class Schema,DB,Uploads,StaticFiles,TypeDefs,StaticData data
+    class SMTP,AdmZip,NextJS,UILibs,AuthLibs external
 ```
 
 ## Diagrama de Sequência - Importação em Massa de Artigos (BibTeX + ZIP)
