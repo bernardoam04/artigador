@@ -48,7 +48,7 @@ export default function EventEditionsPage() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setEvent(data);
@@ -66,7 +66,7 @@ export default function EventEditionsPage() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setEditions(data);
@@ -169,17 +169,14 @@ export default function EventEditionsPage() {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
                       <h3 className="text-lg font-semibold text-gray-900">
-                        {edition.title || `${event?.shortName} ${edition.year}`}
+                        {edition.title || ` ${edition.year}`}
                       </h3>
-                      <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full font-medium">
-                        {edition.year}
-                      </span>
                     </div>
-                    
+
                     {edition.description && (
                       <p className="text-gray-600 mb-3 line-clamp-2">{edition.description}</p>
                     )}
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                       {edition.location && (
                         <div className="flex items-center text-sm text-gray-600">
@@ -191,7 +188,7 @@ export default function EventEditionsPage() {
                         <div className="flex items-center text-sm text-gray-600">
                           <Calendar className="h-4 w-4 mr-1 text-gray-400" />
                           {formatDate(edition.startDate)}
-                          {edition.endDate && formatDate(edition.endDate) !== formatDate(edition.startDate) && 
+                          {edition.endDate && formatDate(edition.endDate) !== formatDate(edition.startDate) &&
                             ` - ${formatDate(edition.endDate)}`}
                         </div>
                       )}
