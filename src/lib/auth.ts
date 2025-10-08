@@ -28,6 +28,7 @@ export function generateToken(user: AuthUser): string {
       id: user.id, 
       username: user.username, 
       email: user.email, 
+      name: user.name,
       role: user.role 
     },
     process.env.JWT_SECRET,
