@@ -100,6 +100,71 @@ export async function POST(
   }
 }
 
+//PUT /api/admin/events/[id]
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const token = request.headers.get('authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = verifyToken(token);
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { id } = await context.params;
+    const body = await request.json();
+    const { name, shortName, description, website, organizer, field, topics, categories } = body;
+
+    // Check if event exists
+    const existingEvent = await prisma.event.findUnique({ where: { id } });
+    if (!existingEvent) {
+      return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+    }
+
+    // Update the event
+    const updatedEvent = await prisma.event.update({
+      where: { id },
+      data: {
+        name,
+        shortName,
+        description,
+        website: website || null,
+        organizer,
+        field,
+        topics: JSON.stringify(topics),
+      }
+    });
+
+    // Update categories if provided
+    if (categories && Array.isArray(categories)) {
+      // Delete existing category relations
+      await prisma.eventCategory.deleteMany({
+        where: { eventId: id }
+      });
+
+      // Create new category relations
+      if (categories.length > 0) {
+        await prisma.eventCategory.createMany({
+          data: categories.map((categoryId: string) => ({
+            eventId: id,
+            categoryId
+          }))
+        });
+      }
+    }
+
+    return NextResponse.json({ message: 'Event updated successfully', event: updatedEvent });
+  } catch (e) {
+    console.error('Error updating event:', e);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 //DELETE /api/admin/events/[id]
 
 export async function DELETE(

@@ -142,11 +142,11 @@ export default function EditArticlePage() {
           pdfPath: articleData.pdfPath || '',
           pages: articleData.pages || '',
           eventEditionId: articleData.eventEditionId,
-          selectedCategories: articleData.categories.map((cat: any) => cat.category.id)
+          selectedCategories: articleData.categories?.map((cat: any) => cat.category.id) || []
         });
 
         // Set authors
-        const articleAuthors = articleData.authors
+        const articleAuthors = (articleData.authors || [])
           .sort((a: any, b: any) => a.order - b.order)
           .map((a: any) => ({
             name: a.author.name,
@@ -234,7 +234,7 @@ export default function EditArticlePage() {
 
   // Set available editions when events are loaded and we have article data
   useEffect(() => {
-    if (events.length > 0 && article) {
+    if (events.length > 0 && article && article.eventEdition?.event?.id) {
       const currentEvent = events.find(event => event.id === article.eventEdition.event.id);
       if (currentEvent) {
         setAvailableEditions(currentEvent.editions);
@@ -399,7 +399,7 @@ export default function EditArticlePage() {
                   Event
                 </label>
                 <select
-                  value={article.eventEdition.event.id}
+                  value={article?.eventEdition?.event?.id || ''}
                   onChange={(e) => handleEventChange(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
                 >

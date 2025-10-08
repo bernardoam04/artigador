@@ -51,10 +51,10 @@ export default function Home() {
               <div className="text-3xl font-bold text-blue-600">2.4M+</div>
               <div className="text-gray-600">Articles</div>
             </div>
-            <div>
+            <Link href="/authors" className="block hover:bg-gray-50 rounded-lg p-2 transition-colors">
               <div className="text-3xl font-bold text-blue-600">150K+</div>
               <div className="text-gray-600">Authors</div>
-            </div>
+            </Link>
             <div>
               <div className="text-3xl font-bold text-blue-600">500+</div>
               <div className="text-gray-600">Institutions</div>

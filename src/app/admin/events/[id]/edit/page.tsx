@@ -83,15 +83,15 @@ export default function EditEventPage() {
         const topics = eventData.topics ? JSON.parse(eventData.topics) : [''];
         
         // Get selected category IDs
-        const selectedCategories = eventData.categories.map((cat: any) => cat.categoryId);
+        const selectedCategories = eventData.categories?.map((cat: any) => cat.categoryId) || [];
         
         setFormData({
-          name: eventData.name,
-          shortName: eventData.shortName,
-          description: eventData.description,
+          name: eventData.name || '',
+          shortName: eventData.shortName || '',
+          description: eventData.description || '',
           website: eventData.website || '',
-          organizer: eventData.organizer,
-          field: eventData.field,
+          organizer: eventData.organizer || '',
+          field: eventData.field || '',
           topics: topics.length > 0 ? topics : [''],
           selectedCategories
         });
