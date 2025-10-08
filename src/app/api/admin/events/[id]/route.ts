@@ -99,3 +99,36 @@ export async function POST(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+//DELETE /api/admin/events/[id]
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
+  try {
+    const token = request.headers.get('authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = verifyToken(token);
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    const { id } = context.params;
+
+    await prisma.event.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: 'Event deleted successfully' });
+
+  } catch (e: any) {
+    if (e.code === 'P2025') {
+       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+    }
+    console.error('Error deleting event:', e);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
