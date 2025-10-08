@@ -133,9 +133,9 @@ export default function EventEditionsPage() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="flex-1">
-            <h2 className="text-lg font-medium text-gray-900">
+            {/* <h2 className="text-lg font-medium text-gray-900">
               {event ? `${event.name} (${event.shortName})` : 'Event'} - Editions
-            </h2>
+            </h2> */}
             <p className="text-sm text-gray-500">Manage event editions and conferences</p>
           </div>
           <Link
@@ -168,15 +168,12 @@ export default function EventEditionsPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <Link 
+                      <Link
                         href={`/editions/${edition.id}`}
                         className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors"
                       >
-                        {edition.title || `${event?.shortName} ${edition.year}`}
+                        {edition.title || `${edition.year}`}
                       </Link>
-                      <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full font-medium">
-                        {edition.year}
-                      </span>
                     </div>
 
                     {edition.description && (
@@ -198,7 +195,7 @@ export default function EventEditionsPage() {
                             ` - ${formatDate(edition.endDate)}`}
                         </div>
                       )}
-                      <Link 
+                      <Link
                         href={`/editions/${edition.id}`}
                         className="flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
                       >

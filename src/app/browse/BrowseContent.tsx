@@ -137,7 +137,7 @@ export default function BrowseContent() {
   };
 
   const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategories(prev => 
+    setSelectedCategories(prev =>
       prev.includes(categoryId)
         ? prev.filter(id => id !== categoryId)
         : [...prev, categoryId]
@@ -165,6 +165,10 @@ export default function BrowseContent() {
       affiliation: a.author.affiliation || ''
     })),
     publishedDate: article.createdAt,
+    submittedDate: article.createdAt, // Using createdAt as fallback
+    lastModified: article.createdAt, // Using createdAt as fallback
+    status: 'published' as const, // Default status
+    language: 'en' as const, // Default language
     venue: `${article.eventEdition.event.shortName} ${article.eventEdition.year}`,
     pdfUrl: article.pdfPath || '',
     categories: article.categories.map(c => ({
@@ -211,7 +215,7 @@ export default function BrowseContent() {
           <div className="flex gap-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -219,7 +223,7 @@ export default function BrowseContent() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-700"
             >
               <option value="relevance">Relevance</option>
               <option value="date">Date</option>
@@ -285,7 +289,7 @@ export default function BrowseContent() {
           <select
             value={sortBy}
             onChange={(e) => handleSortChange(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-1 text-sm"
+            className="border border-gray-300 rounded-md px-3 py-1 text-sm "
           >
             <option value="recent">Most Recent</option>
             <option value="title">Title (A-Z)</option>
@@ -297,7 +301,7 @@ export default function BrowseContent() {
       {/* Articles Grid/List */}
       {articles.length > 0 ? (
         <div className={
-          viewMode === 'grid' 
+          viewMode === 'grid'
             ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
             : 'space-y-4'
         }>
@@ -331,26 +335,25 @@ export default function BrowseContent() {
             >
               Previous
             </button>
-            
+
             {[...Array(Math.min(pagination.pages, 5))].map((_, idx) => {
               const pageNum = Math.max(1, pagination.page - 2) + idx;
               if (pageNum > pagination.pages) return null;
-              
+
               return (
                 <button
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
-                  className={`px-3 py-2 rounded-md ${
-                    pageNum === pagination.page
-                      ? 'bg-blue-600 text-white'
-                      : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className={`px-3 py-2 rounded-md ${pageNum === pagination.page
+                    ? 'bg-blue-600 text-white'
+                    : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
                 >
                   {pageNum}
                 </button>
               );
             })}
-            
+
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page === pagination.pages}
