@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { TrendingUp, Clock, Star } from 'lucide-react';
+import { TrendingUp, Clock, Star, Users } from 'lucide-react';
 import ArticleCard from '@/components/ArticleCard';
 import SearchWithSuggestions from '@/components/SearchWithSuggestions';
 import NewsletterSignup from '@/components/NewsletterSignup';
@@ -141,8 +141,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Newsletter Signup */}
+      {/* Authors */}
       <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+              <Users className="h-8 w-8 text-orange-500 mr-3" />
+              Explore Authors
+            </h2>
+            <Link href="/authors" className="text-blue-600 hover:text-blue-800 font-medium">
+              View all →
+            </Link>
+          </div>
+          <div className="text-center">
+            <p className="text-lg text-gray-600 mb-6">
+              Discover research authors, their publications, and contributions to academia
+            </p>
+            <Link 
+              href="/authors" 
+              className="inline-flex items-center px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 transition-colors"
+            >
+              <Users className="h-5 w-5 mr-2" />
+              Browse Authors
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Signup */}
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <NewsletterSignup />
         </div>
