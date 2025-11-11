@@ -339,18 +339,32 @@ Configure SMTP settings in your `.env` file for newsletter functionality:
 - `GET /api/subscriptions/confirm` - Confirm subscription
 - `POST /api/subscriptions/unsubscribe` - Unsubscribe
 
-## 🧪 Testing
+## 🧪 Testes
 
+Scripts disponíveis:
 ```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
+npm run test           # Testes unitários/componentes (watch)
+npm run test:coverage  # Testes com relatório de cobertura (./coverage)
+npm run test:e2e       # Testes end-to-end com Playwright
+npm run test:ci        # Cobertura + E2E (útil para pipelines)
 ```
+
+Cobertura mínima configurada em `vitest.config.ts` (linhas, funções e declarações >= 70%). Após `npm run test:coverage`, abra `coverage/index.html` para o relatório detalhado.
+
+Estrutura:
+- Unit/Integração: `src/__tests__/` (Vitest + Testing Library)
+- E2E: `e2e/` (Playwright)
+
+Instalação de navegadores Playwright (uma vez):
+```bash
+npx playwright install
+```
+
+### Divisão de tarefas sugerida (testes)
+- Pessoa 1 (Infra/Core): configurar CI, ajustar thresholds, ampliar testes de `src/lib/` (auth, bibtex, email).
+- Pessoa 2 (UI): testes de componentes (`Header`, `SearchWithSuggestions`, `ArticleCard`, `NewsletterSignup`).
+- Pessoa 3 (API): testes de rotas (`/api/subscriptions`, `/api/articles`, `/api/auth/login`) com mocks de Prisma e email.
+- Pessoa 4 (E2E): criar/expandir 4+ specs Playwright (home, busca, autores, newsletter), incluir trace, screenshot e rotina de smoke.
 
 ## 📊 Performance
 

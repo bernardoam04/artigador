@@ -6,7 +6,13 @@
     "dev": "next dev --turbopack -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest",
+    "test:e2e": "playwright test",
+    "test:ci": "vitest run --coverage && playwright test",
+    "e2e:codegen": "playwright codegen http://localhost:3000"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.7",
@@ -35,6 +41,14 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.7",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.0.5",
+    "@vitest/coverage-v8": "^2.0.5",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/user-event": "^14.5.2",
+    "jsdom": "^24.0.0",
+    "supertest": "^7.0.0",
+    "playwright": "^1.48.0"
   }
 }
