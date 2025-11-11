@@ -16,7 +16,8 @@ export default defineConfig({
         { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     ],
     webServer: {
-        command: process.env.PLAYWRIGHT_WEB_SERVER_CMD || 'npm run dev',
+        // Usar webpack no ambiente de E2E para evitar problemas do Turbopack com lightningcss no Windows
+        command: process.env.PLAYWRIGHT_WEB_SERVER_CMD || 'npm run dev:webpack',
         url: 'http://localhost:3000',
         reuseExistingServer: true,
     },
