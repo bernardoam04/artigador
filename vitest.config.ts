@@ -23,6 +23,9 @@ export default defineConfig({
                 'src/lib/email.ts',
                 'src/components/NewsletterSignup.tsx',
                 'src/app/api/subscriptions/route.ts',
+                'src/app/api/articles/search/route.ts',
+                'src/app/api/auth/login/route.ts',
+                'src/app/api/articles/route.ts',
             ],
             exclude: [
                 'src/**/*.d.ts',
