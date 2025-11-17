@@ -44,15 +44,28 @@ export async function POST(request: NextRequest) {
     // Create new subscription with confirmation token
     const confirmToken = crypto.randomBytes(32).toString('hex');
     
+    // In development, auto-confirm subscriptions if email is not configured
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const emailConfigured = process.env.EMAIL_USER && process.env.EMAIL_USER !== 'seu-email@gmail.com';
+    const autoConfirm = isDevelopment && !emailConfigured;
+    
     const subscription = await prisma.subscription.create({
       data: {
         email,
         name: name || null,
         interests: interests.join(','),
-        confirmToken,
-        isConfirmed: false
+        confirmToken: autoConfirm ? null : confirmToken,
+        isConfirmed: autoConfirm,
+        confirmedAt: autoConfirm ? new Date() : null
       }
     });
+
+    // Skip email in development if not configured
+    if (autoConfirm) {
+      return NextResponse.json({ 
+        message: 'You have been successfully subscribed to our newsletter!' 
+      });
+    }
 
     // Send confirmation email
     const confirmationEmail = emailTemplates.subscriptionConfirmation(email, confirmToken);

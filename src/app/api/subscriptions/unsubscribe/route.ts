@@ -23,16 +23,20 @@ export async function POST(request: NextRequest) {
     }
 
     await prisma.subscription.delete({
-      where: { email }
+      where: { id: subscription.id }
     });
 
     return NextResponse.json({ 
       message: 'You have been successfully unsubscribed from our newsletter' 
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error unsubscribing:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error details:', error.message, error.stack);
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    }, { status: 500 });
   }
 }
 
