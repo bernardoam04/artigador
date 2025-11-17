@@ -39,31 +39,31 @@ export default function AuthorsPage() {
   });
 
   useEffect(() => {
-    fetchAuthors();
-  }, [searchQuery, pagination.page]);
+    const fetchAuthors = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: pagination.page.toString(),
+          limit: pagination.limit.toString()
+        });
 
-  const fetchAuthors = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: pagination.page.toString(),
-        limit: pagination.limit.toString()
-      });
+        if (searchQuery) params.append('q', searchQuery);
 
-      if (searchQuery) params.append('q', searchQuery);
-
-      const response = await fetch(`/api/authors?${params}`);
-      if (response.ok) {
-        const data = await response.json();
-        setAuthors(data.authors);
-        setPagination(data.pagination);
+        const response = await fetch(`/api/authors?${params}`);
+        if (response.ok) {
+          const data = await response.json();
+          setAuthors(data.authors);
+          setPagination(data.pagination);
+        }
+      } catch (error) {
+        console.error('Error fetching authors:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching authors:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchAuthors();
+  }, [searchQuery, pagination.page, pagination.limit]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
