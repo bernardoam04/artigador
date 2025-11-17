@@ -161,6 +161,7 @@ export default function BrowseContent() {
     title: article.title,
     abstract: article.abstract || '',
     authors: article.authors.map(a => ({
+      id: a.author.id,
       name: a.author.name,
       affiliation: a.author.affiliation || ''
     })),
@@ -169,17 +170,24 @@ export default function BrowseContent() {
     lastModified: article.createdAt, // Using createdAt as fallback
     status: 'published' as const, // Default status
     language: 'en' as const, // Default language
-    venue: `${article.eventEdition.event.shortName} ${article.eventEdition.year}`,
+    venue: {
+      name: article.eventEdition.event.name,
+      type: 'conference' as const,
+      year: article.eventEdition.year
+    },
     pdfUrl: article.pdfPath || '',
     categories: article.categories.map(c => ({
       id: c.category.id,
-      name: c.category.name
+      name: c.category.name,
+      description: ''
     })),
     keywords: article.keywords ? article.keywords.split(',').map(k => k.trim()) : [],
     doi: article.doi,
     url: article.url,
     citationCount: 0, // Not implemented yet
-    downloads: 0 // Not implemented yet
+    downloads: 0, // Not implemented yet
+    pageCount: 0, // Default value
+    version: 1 // Default value
   });
 
   if (loading && articles.length === 0) {

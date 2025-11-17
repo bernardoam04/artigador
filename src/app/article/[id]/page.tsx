@@ -86,11 +86,16 @@ export default function ArticlePage() {
                       className="flex items-center justify-between"
                     >
                       <div>
-                        <div className="font-medium text-gray-900">{author.author.name}</div>
-                        {author.affiliation && (
+                        <a 
+                          href={`/authors/${author.author?.id || author.authorId}`}
+                          className="font-medium text-gray-900 hover:text-blue-600 hover:underline"
+                        >
+                          {author.author?.name || author.name}
+                        </a>
+                        {(author.author?.affiliation || author.affiliation) && (
                           <div className="text-sm text-gray-600 flex items-center">
                             <Building className="h-3 w-3 mr-1" />
-                            {author.affiliation}
+                            {author.author?.affiliation || author.affiliation}
                           </div>
                         )}
                       </div>

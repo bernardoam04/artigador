@@ -42,7 +42,27 @@ export default function ArticleCard({ article }: ArticleCardProps) {
 
       <div className="mb-3">
         <p className="text-sm text-gray-600 mb-2">
-          {article.authors.map(author => author.name).join(', ')}
+          {article.authors.map((authorRel: any, index: number) => {
+            // Try different possible structures from the API
+            const authorId = authorRel.author?.id || authorRel.authorId || authorRel.id;
+            const authorName = authorRel.author?.name || authorRel.name;
+            
+            return (
+              <span key={authorId || index}>
+                {authorId ? (
+                  <Link 
+                    href={`/authors/${authorId}`}
+                    className="hover:text-blue-600 hover:underline"
+                  >
+                    {authorName}
+                  </Link>
+                ) : (
+                  <span>{authorName}</span>
+                )}
+                {index < article.authors.length - 1 && ', '}
+              </span>
+            );
+          })}
         </p>
         <p className="text-sm text-gray-700 line-clamp-3">
           {article.abstract}

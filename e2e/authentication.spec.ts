@@ -1,45 +1,39 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Authentication Flow', () => {
+test.describe('Authentication Flow (V2 - Para Apresentação)', () => {
     test('login page loads and displays form', async ({ page }) => {
         await page.goto('/login');
 
-        // Check URL
         await expect(page).toHaveURL(/\/login/);
-
-        // Wait for page to load
         await page.waitForLoadState('networkidle');
 
-        // Look for login form elements - check if they exist first
-        const emailInput = page.getByLabel(/email/i).or(page.getByPlaceholder(/email/i));
-        const loginButton = page.getByRole('button', { name: /login|sign in|entrar/i });
+        const usernameInput = page.getByLabel(/username/i).or(page.getByPlaceholder(/username/i)).first();
+        const loginButton = page.getByRole('button', { name: /sign in|login|entrar/i }).first();
 
-        // Count how many elements match
-        const emailCount = await emailInput.count();
-        const buttonCount = await loginButton.count();
-
-        // At least one email input and one login button should be present
-        expect(emailCount).toBeGreaterThan(0);
-        expect(buttonCount).toBeGreaterThan(0);
+        // Asserção principal: elementos estão visíveis
+        await expect(usernameInput).toBeVisible();
+        await expect(loginButton).toBeVisible();
         
-        // Verify at least one is visible
-        await expect(emailInput.first()).toBeVisible();
+        // Pausa para apresentação
+        await page.waitForTimeout(2000);
     });
 
     test('login form shows validation errors for empty fields', async ({ page }) => {
         await page.goto('/login');
+        await page.waitForLoadState('networkidle');
 
-        // Try to submit without filling fields
-        const loginButton = page.getByRole('button', { name: /login|sign in|entrar/i }).first();
+        const loginButton = page.getByRole('button', { name: /sign in|login|entrar/i }).first();
         await loginButton.click();
 
-        // HTML5 validation or custom error should prevent submission
-        // Check if we're still on login page (not redirected)
+        // Garante que a URL não mudou
         await expect(page).toHaveURL(/\/login/);
+        
+        // Pausa para apresentação
+        await page.waitForTimeout(2000);
     });
 
     test('login form handles invalid credentials', async ({ page }) => {
-        // Mock failed login response
+        // Mock (simulação) de uma falha de login
         await page.route('**/api/auth/login', async (route) => {
             if (route.request().method() === 'POST') {
                 await route.fulfill({
@@ -55,203 +49,128 @@ test.describe('Authentication Flow', () => {
         await page.goto('/login');
         await page.waitForLoadState('networkidle');
 
-        // Fill in credentials - wait for each to be visible first
-        const emailInput = page.getByLabel(/email/i).or(page.getByPlaceholder(/email/i)).first();
+        const usernameInput = page.getByLabel(/username/i).or(page.getByPlaceholder(/username/i)).first();
         const passwordInput = page.getByLabel(/password/i).or(page.getByPlaceholder(/password/i)).first();
         
-        await emailInput.waitFor({ state: 'visible', timeout: 10000 });
-        await emailInput.fill('wrong@example.com');
-        
-        await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
+        await usernameInput.fill('wronguser');
+        await page.waitForTimeout(1000); // Pausa
         await passwordInput.fill('wrongpassword');
+        await page.waitForTimeout(1000); // Pausa
 
-        // Submit form
-        const loginButton = page.getByRole('button', { name: /login|sign in|entrar/i }).first();
+        const loginButton = page.getByRole('button', { name: /sign in|login|entrar/i }).first();
         await loginButton.click();
 
-        // Should show error message or stay on login page
-        await page.waitForTimeout(2000);
-        const hasError = await page.getByText(/invalid|error|incorrect|failed/i).first().isVisible().catch(() => false);
-        const stillOnLogin = page.url().includes('/login');
+        // Espera a mensagem de erro aparecer
+        const errorMessage = page.getByText(/invalid|error|incorrect|failed/i).first();
+        await expect(errorMessage).toBeVisible();
+
+        // Garante que não fomos redirecionados
+        await expect(page).toHaveURL(/\/login/);
         
-        expect(hasError || stillOnLogin).toBeTruthy();
+        // Pausa para apresentação
+        await page.waitForTimeout(2000);
     });
 
-    test('successful login redirects to appropriate page', async ({ page }) => {
+    test('login with admin and delete first article', async ({ page, context }) => {
+        // --- 1. LOGIN ---
         await page.goto('/login');
         await page.waitForLoadState('networkidle');
 
-        // Fill in valid credentials - wait for visibility
         const emailInput = page.getByLabel(/email|username|usuário/i).or(page.getByPlaceholder(/email|username|usuário/i)).first();
         const passwordInput = page.getByLabel(/password|senha/i).or(page.getByPlaceholder(/password|senha/i)).first();
         
-        await emailInput.waitFor({ state: 'visible', timeout: 10000 });
         await emailInput.fill('admin');
-        
-        await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
+        await page.waitForTimeout(1000); // Pausa
         await passwordInput.fill('admin123');
-
-        // Submit form
+        await page.waitForTimeout(1000); // Pausa
+        
         const loginButton = page.getByRole('button', { name: /login|sign in|entrar/i }).first();
-        await loginButton.click();
-
-        // Wait for navigation after login
-        await page.waitForTimeout(2000);
         
-        const currentUrl = page.url();
-        const isStillOnLogin = currentUrl.includes('/login');
-        const hasSuccessMessage = await page.getByText(/success|welcome|logado/i).first().isVisible().catch(() => false);
+        // Espera pela navegação
+        await Promise.all([
+            page.waitForURL(/\/admin/, { timeout: 10000 }), 
+            loginButton.click()
+        ]);
         
-        // Either redirected away or shows success message
-        expect(!isStillOnLogin || hasSuccessMessage).toBeTruthy();
-    });
-
-    test('login with admin credentials and delete first article', async ({ page, context }) => {
-        // Login with admin credentials
-        await page.goto('/login');
-        await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(1000); // Pause to see the login page
-
-        // Fill in admin credentials
-        const emailInput = page.getByLabel(/email|username|usuário/i).or(page.getByPlaceholder(/email|username|usuário/i)).first();
-        const passwordInput = page.getByLabel(/password|senha/i).or(page.getByPlaceholder(/password|senha/i)).first();
+        console.log('Current URL after login:', page.url());
+        await page.waitForTimeout(2000); // Pausa pós-login
         
-        await emailInput.waitFor({ state: 'visible', timeout: 10000 });
-        await emailInput.fill('admin');
-        await page.waitForTimeout(800); // Pause after typing username
-        
-        await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
-        await passwordInput.fill('admin123');
-        await page.waitForTimeout(800); // Pause after typing password
-
-        // Submit login form
-        const loginButton = page.getByRole('button', { name: /login|sign in|entrar/i }).first();
-        await loginButton.click();
-
-        // Wait for navigation to complete after login
-        await page.waitForURL(/\/admin/, { timeout: 10000 });
-        await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(2000);
-        
-        // Check current URL
-        const currentUrl = page.url();
-        console.log('Current URL after login:', currentUrl);
-
-        // Should be on admin page now
-        if (!currentUrl.includes('/admin')) {
-            throw new Error('Login failed - not redirected to admin page');
-        }
-
-        // Now navigate to articles by clicking the link (preserves localStorage)
+        // --- 2. NAVEGAÇÃO ---
         console.log('Looking for Articles link...');
-        
-        // Look for the Articles link in the navigation
         const articlesLink = page.getByRole('link', { name: /articles|artigos/i }).first();
-        const linkCount = await page.getByRole('link', { name: /articles|artigos/i }).count();
-        console.log(`Found ${linkCount} links with "articles"`);
         
-        if (linkCount > 0) {
-            await articlesLink.scrollIntoViewIfNeeded();
-            await page.waitForTimeout(1000);
-            
-            // Remove target="_blank" from the link if it exists to prevent new tab
-            await articlesLink.evaluate((el) => {
-                if (el instanceof HTMLAnchorElement) {
-                    el.removeAttribute('target');
-                }
-            });
-            
-            console.log('Clicking Articles link...');
-            await articlesLink.click();
-            await page.waitForLoadState('networkidle');
-            await page.waitForTimeout(2000);
-        } else {
-            // If no link found, navigate directly
-            console.log('No articles link found, navigating directly...');
-            await page.goto('/admin/articles', { waitUntil: 'networkidle' });
-            await page.waitForTimeout(2000);
-        }
+        await articlesLink.evaluate((el) => el.removeAttribute('target'));
         
-        // Check if we're on the articles page
+        console.log('Clicking Articles link...');
+        await Promise.all([
+            page.waitForURL(/\/admin\/articles/, { waitUntil: 'networkidle' }),
+            articlesLink.click()
+        ]);
+        
         const articlesUrl = page.url();
         console.log('URL after navigating to articles:', articlesUrl);
+        await page.waitForTimeout(2000); // Pausa na página de artigos
         
+        // Checagem de segurança
         if (articlesUrl.includes('/login')) {
-            console.log('⚠️ Redirected back to login - authentication may have failed');
             throw new Error('Not authenticated - redirected to login page');
         }
 
-        // Wait for the articles table to load
-        await page.waitForTimeout(2000);
+        // --- 3. AÇÃO (DELETAR) ---
+        
+        await expect(page.locator('table, [role="table"]')).toBeVisible();
 
-        // Count articles before deletion
         const articleRows = page.locator('table tbody tr, [role="row"]').filter({ hasNotText: /no articles|nenhum artigo/i });
         const initialCount = await articleRows.count();
         console.log(`Found ${initialCount} articles in the table`);
 
-        // Find the first delete button in the table
-        const firstDeleteButton = page.getByRole('button', { name: /delete|deletar|excluir|remover/i }).first();
-        
-        // Check if there are any articles to delete
-        const deleteButtonCount = await page.getByRole('button', { name: /delete|deletar|excluir|remover/i }).count();
-        console.log(`Found ${deleteButtonCount} delete buttons`);
-        
-        if (deleteButtonCount > 0) {
-            // Highlight the button before clicking (scroll into view)
-            await firstDeleteButton.scrollIntoViewIfNeeded();
-            await page.waitForTimeout(1000); // Pause to see which button will be clicked
-            
-            // Set up dialog handler to accept the confirmation (before clicking)
+        if (initialCount > 0) {
+            // Configura o handler do diálogo
             page.once('dialog', async (dialog) => {
                 console.log(`Dialog message: ${dialog.message()}`);
-                await page.waitForTimeout(1500); // Pause to see the dialog
-                console.log('Accepting dialog...');
+                await page.waitForTimeout(1500); // Pausa para ver o diálogo
                 await dialog.accept();
+                console.log('Dialog accepted.');
             });
             
-            // Click the first delete button
+            const firstDeleteButton = page.getByRole('button', { name: /delete|deletar|excluir|remover/i }).first();
+            await firstDeleteButton.scrollIntoViewIfNeeded();
+            await page.waitForTimeout(1000); // Pausa para ver o botão
+            
             console.log('Clicking delete button...');
             await firstDeleteButton.click();
 
-            // Wait for dialog to appear and be handled
-            await page.waitForTimeout(2000);
+            // Espera pelo resultado (contagem diminuir)
+            console.log('Waiting for row count to decrease...');
+            await expect(articleRows).toHaveCount(initialCount - 1, { timeout: 10000 });
 
-            // Wait for deletion to complete
-            await page.waitForTimeout(2000);
-
-            // Verify deletion was successful
             const finalCount = await articleRows.count();
             console.log(`Articles after deletion: ${finalCount}`);
             
-            if (finalCount < initialCount) {
-                console.log('✓ Article deleted successfully!');
-            } else {
-                console.log('⚠️ Article count did not decrease');
-            }
+            expect(finalCount).toBe(initialCount - 1);
+            console.log('✓ Article deleted successfully!');
 
-            expect(true).toBeTruthy();
         } else {
             console.log('No articles found to delete');
-            expect(true).toBeTruthy();
+            // Se não há artigos, o teste deve passar, pois não há o que fazer.
+            // A asserção é que a contagem é 0.
+            expect(initialCount).toBe(0);
         }
+        
+        // Pausa para apresentação
+        await page.waitForTimeout(2000);
     });
 
     test('protected admin routes require authentication', async ({ page }) => {
-        // Try to access admin page without authentication
         await page.goto('/admin');
 
-        // Should either:
-        // 1. Redirect to login page
-        // 2. Show unauthorized message
-        // 3. Show login prompt
+        // Espera a URL mudar para /login
+        await page.waitForURL(/\/login/, { timeout: 10000 });
         
-        await page.waitForTimeout(1000);
-        const currentUrl = page.url();
+        // E então confirmar
+        expect(page.url()).toContain('/login');
         
-        const isRedirectedToLogin = currentUrl.includes('/login');
-        const hasUnauthorizedMessage = await page.getByText(/unauthorized|not authorized|access denied|login required/i).first().isVisible().catch(() => false);
-        
-        // One of these should be true for proper auth protection
-        expect(isRedirectedToLogin || hasUnauthorizedMessage).toBeTruthy();
+        // Pausa para apresentação
+        await page.waitForTimeout(2000);
     });
 });
