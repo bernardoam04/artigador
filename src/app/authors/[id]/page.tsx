@@ -164,21 +164,33 @@ export default function AuthorPage() {
     title: article.title,
     abstract: article.abstract || '',
     authors: article.authors.map(a => ({
+      id: a.author.id,
       name: a.author.name,
       affiliation: a.author.affiliation || ''
     })),
     publishedDate: article.createdAt,
-    venue: `${article.eventEdition.event.shortName} ${article.eventEdition.year}`,
+    submittedDate: article.createdAt,
+    lastModified: article.createdAt,
+    status: 'published' as const,
+    language: 'en' as const,
+    venue: {
+      name: article.eventEdition.event.name,
+      type: 'conference' as const,
+      year: article.eventEdition.year
+    },
     pdfUrl: article.pdfPath || '',
     categories: article.categories.map(c => ({
       id: c.category.id,
-      name: c.category.name
+      name: c.category.name,
+      description: ''
     })),
     keywords: article.keywords ? article.keywords.split(',').map(k => k.trim()) : [],
     doi: article.doi,
     url: article.url,
     citationCount: 0, // Not implemented yet
-    downloads: 0 // Not implemented yet
+    downloads: 0, // Not implemented yet
+    pageCount: 0,
+    version: 1
   });
 
   // Get career statistics
@@ -381,9 +393,11 @@ export default function AuthorPage() {
                             {articlesByYear[year].map(article => (
                               <article key={article.id} className="border-l-4 border-blue-200 pl-6 hover:border-blue-400 transition-colors">
                                 <div className="mb-4">
-                                  <h4 className="text-xl font-semibold text-gray-900 mb-2 leading-tight">
-                                    {article.title}
-                                  </h4>
+                                  <Link href={`/article/${article.id}`}>
+                                    <h4 className="text-xl font-semibold text-gray-900 mb-2 leading-tight hover:text-blue-600 transition-colors cursor-pointer">
+                                      {article.title}
+                                    </h4>
+                                  </Link>
                                   
                                   {/* Authors */}
                                   <div className="flex items-center text-gray-600 mb-2">

@@ -16,6 +16,7 @@ interface Article {
   pdfPath?: string;
   pages?: string;
   createdAt: string;
+  publishedDate?: string;
   authors: Array<{
     order: number;
     author: {
@@ -156,31 +157,45 @@ export default function BrowseContent() {
   };
 
   // Convert article format for ArticleCard compatibility
-  const convertArticle = (article: Article) => ({
-    id: article.id,
-    title: article.title,
-    abstract: article.abstract || '',
-    authors: article.authors.map(a => ({
-      name: a.author.name,
-      affiliation: a.author.affiliation || ''
-    })),
-    publishedDate: article.createdAt,
-    submittedDate: article.createdAt, // Using createdAt as fallback
-    lastModified: article.createdAt, // Using createdAt as fallback
-    status: 'published' as const, // Default status
-    language: 'en' as const, // Default language
-    venue: `${article.eventEdition.event.shortName} ${article.eventEdition.year}`,
-    pdfUrl: article.pdfPath || '',
-    categories: article.categories.map(c => ({
-      id: c.category.id,
-      name: c.category.name
-    })),
-    keywords: article.keywords ? article.keywords.split(',').map(k => k.trim()) : [],
-    doi: article.doi,
-    url: article.url,
-    citationCount: 0, // Not implemented yet
-    downloads: 0 // Not implemented yet
-  });
+  const convertArticle = (article: Article) => {
+    try {
+      return {
+        id: article.id,
+        title: article.title,
+        abstract: article.abstract || '',
+        authors: (article.authors || []).map(a => ({
+          id: a.author?.id || '',
+          name: a.author?.name || 'Unknown',
+          affiliation: a.author?.affiliation || ''
+        })),
+        publishedDate: article.publishedDate || article.createdAt,
+        submittedDate: article.createdAt,
+        lastModified: article.createdAt,
+        status: 'published' as const,
+        language: 'en' as const,
+        venue: {
+          name: article.eventEdition?.event?.name || 'Unknown',
+          type: 'conference' as const,
+          year: article.eventEdition?.year || 0
+        },
+        pdfUrl: article.pdfPath || '',
+        categories: (article.categories || []).map(c => ({
+          id: c.category?.id || '',
+          name: c.category?.name || '',
+          description: ''
+        })),
+        keywords: article.keywords ? article.keywords.split(',').map(k => k.trim()) : [],
+        doi: article.doi || '',
+        citationCount: 0,
+        downloads: 0,
+        pageCount: 0,
+        version: 1
+      };
+    } catch (error) {
+      console.error('Error converting article:', article.id, error);
+      return null;
+    }
+  };
 
   if (loading && articles.length === 0) {
     return (
@@ -305,9 +320,12 @@ export default function BrowseContent() {
             ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
             : 'space-y-4'
         }>
-          {articles.map(article => (
-            <ArticleCard key={article.id} article={convertArticle(article)} />
-          ))}
+          {articles.map(article => {
+            const converted = convertArticle(article);
+            return converted ? (
+              <ArticleCard key={article.id} article={converted} />
+            ) : null;
+          }).filter(Boolean)}
         </div>
       ) : loading ? (
         <div className="text-center py-12">
