@@ -142,18 +142,19 @@ export default function ArticlePage() {
                     </button>
                   )}
                 </div>
-                {isPdfVisible && article.pdfUrl && (
-                  <div className="border rounded-lg overflow-hidden bg-gray-100">
-                    {article.pdfUrl ? (
+                {article.pdfUrl ? (
+                  isPdfVisible && (
+                    <div className="border rounded-lg overflow-hidden bg-gray-100">
                       <iframe src={article.pdfUrl} className="w-full h-96" />
-                    ) : (
-                      <div className="h-96 flex items-center justify-center text-gray-500">
-                        <div className="text-center">
-                          <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                          <p>No PDF available</p>
-                        </div>
-                      </div>
-                    )}
+                    </div>
+                  )
+                ) : (
+                  <div className="border rounded-lg p-8 bg-gray-50">
+                    <div className="text-center text-gray-500">
+                      <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                      <p className="text-lg font-medium mb-2">PDF Not Available</p>
+                      <p className="text-sm">The full text PDF for this article has not been uploaded yet.</p>
+                    </div>
                   </div>
                 )}
               </div>
