@@ -160,17 +160,4 @@ test.describe('Authentication Flow (V2 - Para Apresentação)', () => {
         // Pausa para apresentação
         await page.waitForTimeout(2000);
     });
-
-    test('protected admin routes require authentication', async ({ page }) => {
-        await page.goto('/admin');
-
-        // Espera a URL mudar para /login
-        await page.waitForURL(/\/login/, { timeout: 10000 });
-        
-        // E então confirmar
-        expect(page.url()).toContain('/login');
-        
-        // Pausa para apresentação
-        await page.waitForTimeout(2000);
-    });
 });

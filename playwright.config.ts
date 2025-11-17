@@ -11,7 +11,7 @@ export default defineConfig({
         baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
-        video: 'retain-on-failure',
+        video: 'on', // Always record video
         // Slow down test execution to see what's happening (in milliseconds)
         launchOptions: {
             slowMo: 500, // Wait 500ms between each action
